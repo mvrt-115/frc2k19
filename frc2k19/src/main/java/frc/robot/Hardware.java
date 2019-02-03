@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 
 /**
@@ -18,4 +19,9 @@ public class Hardware {
     public static CANSparkMax frontRight;
     public static CANSparkMax backLeft;
     public static CANSparkMax backRight;
+
+    public static TalonSRX armOne;
+    public static TalonSRX armTwo;
+    public static TalonSRX armThree;
+    public static TalonSRX armFour;
 }
