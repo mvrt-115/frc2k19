@@ -23,17 +23,13 @@ import frc.robot.Robot;
  * Add your docs here.
  */
 public class Arm extends Subsystem {
-  
+
   public enum ArmState {
-		ZEROED,
-    ZEROING,
-		SETPOINT, 
-		HOLD,
-		MANUAL
-  }; 
+    ZEROED, ZEROING, SETPOINT, HOLD, MANUAL
+  };
 
   public double setpoint;
-  public DigitalInput limitSwitch;
+  public DigitalInput hallEffect;
 
   public ArmState currState = ArmState.ZEROED;
 
@@ -46,74 +42,80 @@ public class Arm extends Subsystem {
     Hardware.armThree = new TalonSRX(2);
     Hardware.armFour = new TalonSRX(3);
 
+    hallEffect = new DigitalInput(0);
+
     Hardware.armTwo.follow(Hardware.armOne);
     Hardware.armThree.follow(Hardware.armOne);
     Hardware.armFour.follow(Hardware.armOne);
 
     /* First choose the sensor. */
-		Hardware.armOne.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-		Hardware.armOne.setSensorPhase(false);
+    Hardware.armOne.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx,
+        Constants.kTimeoutMs);
+    Hardware.armOne.setSensorPhase(false);
 
-		/* Set relevant frame periods to be at least as fast as periodic rate. */
-		Hardware.armOne.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
-		Hardware.armOne.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
-    
+    /* Set relevant frame periods to be at least as fast as periodic rate. */
+    Hardware.armOne.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+    Hardware.armOne.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+
     Hardware.armOne.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
-		//		Hardware.ArmLeft.config_kF(0, Constants.kArmF, Constants.kTimeoutMs);
-		Hardware.armOne.config_kP(0, Constants.kArmP, Constants.kTimeoutMs);
-		Hardware.armOne.config_kD(0, Constants.kArmD, Constants.kTimeoutMs);
+    // Hardware.ArmLeft.config_kF(0, Constants.kArmF, Constants.kTimeoutMs);
+    Hardware.armOne.config_kP(0, Constants.kArmP, Constants.kTimeoutMs);
+    Hardware.armOne.config_kD(0, Constants.kArmD, Constants.kTimeoutMs);
 
-		//		Hardware.ArmLeft.config_kF(0, Constants.kArmF, Constants.kTimeoutMs);
-		Hardware.armOne.config_kP(1, Constants.kArmP, Constants.kTimeoutMs);
-		Hardware.armOne.config_kD(1, Constants.kArmD, Constants.kTimeoutMs);
+    // Hardware.ArmLeft.config_kF(0, Constants.kArmF, Constants.kTimeoutMs);
+    Hardware.armOne.config_kP(1, Constants.kArmP, Constants.kTimeoutMs);
+    Hardware.armOne.config_kD(1, Constants.kArmD, Constants.kTimeoutMs);
 
-		//Hardware.armOne.configAllowableClosedloopError(Constants.kSlotIdx, (int)(UnitConverter.convertInchesToTicks(1.1)), Constants.kTimeoutMs);
+    // Hardware.armOne.configAllowableClosedloopError(Constants.kSlotIdx,
+    // (int)(UnitConverter.convertInchesToTicks(1.1)), Constants.kTimeoutMs);
 
-		/* set acceleration and vcruise velocity - see documentation */
-		Hardware.armOne.configMotionCruiseVelocity(Constants.kMaxCruiseVelocity, Constants.kTimeoutMs);
-		Hardware.armOne.configMotionAcceleration(6000, Constants.kTimeoutMs);
+    /* set acceleration and vcruise velocity - see documentation */
+    Hardware.armOne.configMotionCruiseVelocity(Constants.kMaxCruiseVelocity, Constants.kTimeoutMs);
+    Hardware.armOne.configMotionAcceleration(6000, Constants.kTimeoutMs);
 
-		/* zero the sensor */
-		Hardware.armOne.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-		//Hardware.armOne.configForwardSoftLimitThreshold((int)(UnitConverter.convertMetersToTicks(1.6)), 0);
-		//Hardware.armOne.configForwardSoftLimitEnable(true, 0);
- 
-    new Notifier(new Runnable(){
-			public void run() {
-				loop();				
-			}
+    /* zero the sensor */
+    Hardware.armOne.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    // Hardware.armOne.configForwardSoftLimitThreshold((int)(UnitConverter.convertMetersToTicks(1.6)),
+    // 0);
+    // Hardware.armOne.configForwardSoftLimitEnable(true, 0);
+
+    new Notifier(new Runnable() {
+      public void run() {
+        loop();
+      }
 
     }).startPeriodic(0.005);
-    
+
   }
 
-
- public void loop(){
-    switch(currState){
+  public void loop() {
+    switch (currState) {
     case ZEROING:
-      if(getArmEncoderValue() < Constants.kBottomTolerance){
+      if (getArmEncoderValue() < Constants.kBottomTolerance) {
         updateState(ArmState.ZEROED);
         stop();
-      }
-      else if(Math.abs(getArmEncoderValue() - setpoint) < Constants.kBottomTolerance){
+      } else if (hallEffect.get()) {
         updateState(ArmState.ZEROED);
-        stop();
+        Hardware.armOne.setSelectedSensorPosition(0);
       }
-      
-        break;
-    case SETPOINT: 
-      if(Math.abs(getArmEncoderValue() - setpoint) < Constants.kSetpointTolerance){
-        hold();
-        updateState(ArmState.HOLD);
+
+      break;
+    case SETPOINT:
+      if (Math.abs(getArmEncoderValue() - setpoint) < Constants.kSetpointTolerance) {
+        // hold();
+        // updateState(ArmState.HOLD);
       }
-        break;
+      break;
     case ZEROED:
+      if (hallEffect.get()) {
+        Hardware.armOne.setSelectedSensorPosition(0);
+      }
       break;
     case HOLD:
-      hold();
+      // hold();
       break;
     case MANUAL:
-      manualControl(Robot.oi.getArmThrottle());
+      manualControl(0.5 * Robot.oi.getArmThrottle());
       break;
     }
   }
@@ -122,20 +124,19 @@ public class Arm extends Subsystem {
     return Hardware.armOne.getSelectedSensorPosition();
   }
 
-
   public void hold() {
     Hardware.armOne.set(ControlMode.PercentOutput, Constants.kHoldVoltage);
   }
 
-  public void manualControl(double armThrottle){
+  public void manualControl(double armThrottle) {
     Hardware.armOne.set(ControlMode.PercentOutput, armThrottle * 0.5);
   }
 
-  public void updateState(ArmState state){
+  public void updateState(ArmState state) {
     currState = state;
   }
 
-  public void stop(){
+  public void stop() {
     Hardware.armOne.set(ControlMode.PercentOutput, 0);
   }
 
@@ -147,16 +148,14 @@ public class Arm extends Subsystem {
 
   public void zeroArm(String direction) {
 
-    if(direction.equalsIgnoreCase("Forward")){
+    if (direction.equalsIgnoreCase("Forward")) {
       setpoint = 0;
       currState = ArmState.ZEROING;
-    }
-    else if(direction.equalsIgnoreCase("Backward")){
+    } else if (direction.equalsIgnoreCase("Backward")) {
       setpoint = Constants.kMaxEncoderValue;
       currState = ArmState.ZEROING;
     }
   }
-
 
   @Override
   public void initDefaultCommand() {
