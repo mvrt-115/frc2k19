@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
-import frc.robot.subsystems.Drivetrain;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.DriveWithJoystick;
+import frc.robot.subsystems.GroundIntake;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,8 +23,8 @@ import frc.robot.subsystems.Drivetrain;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static Drivetrain drivetrain;
   public static OI oi;
+  public static GroundIntake ground;
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -35,9 +35,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    oi = new OI(); 
-    drivetrain = new Drivetrain();
-
+    oi = new OI();
+    ground = new GroundIntake();
+     m_chooser.setDefaultOption("Default Auto", new DriveWithJoystick());
+    // chooser.addOption("My Auto", new MyAutoCommand());
+    SmartDashboard.putData("Auto mode", m_chooser);
   }
 
   /**
@@ -126,5 +128,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    
   }
 }
