@@ -10,31 +10,46 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class DriveWithJoystick extends Command {
- 
- 
+public class DriveWithJoystick extends Command 
+{
   public DriveWithJoystick() {
-     requires(Robot.drivetrain);
+    // Use requires() here to declare subsystem dependencies
+    requires(Robot.ground);
   }
 
-  protected void initialize() {}
+  // Called just before this Command runs the first time
+  @Override
+  protected void initialize() 
+  {
 
-
-  protected void execute() {
-    // Robot.drivetrain.curvatureDrive(-Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
-    Robot.drivetrain.cheesyDriveWithJoystick(-Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
   }
 
-  
-  protected boolean isFinished() {
-     return false;
+  // Called repeatedly when this Command is scheduled to run
+  @Override
+  protected void execute() 
+  {
+    Robot.ground.drive();
   }
 
-  protected void end() {
-      Robot.drivetrain.setLeftRightMotorOutputs(0, 0);
+  // Make this return true when this Command no longer needs to run execute()
+  @Override
+  protected boolean isFinished() 
+  {
+    return false;
   }
-  
-  protected void interrupted() {
-      end();
+
+  // Called once after isFinished returns true
+  @Override
+  protected void end() 
+  {
+    Robot.ground.stop();
+  }
+
+  // Called when another command which requires one or more of the same
+  // subsystems is scheduled to run
+  @Override
+  protected void interrupted() 
+  {
+    end();
   }
 }
