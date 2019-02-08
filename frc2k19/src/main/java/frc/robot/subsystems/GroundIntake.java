@@ -1,0 +1,79 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
+package frc.robot.subsystems;
+
+import edu.wpi.first.wpilibj.command.Subsystem;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Robot;
+
+import frc.robot.commands.DriveWithJoystick;
+
+/**
+ * An example subsystem.  You can replace me with your own Subsystem.
+ */
+public class GroundIntake extends Subsystem {
+  // Put methods for controlling this subsystem
+  // here. Call these from Commands.
+
+  public WPI_TalonSRX intake;
+  public WPI_TalonSRX stowing;
+  public DigitalInput groundBreakbeam;
+
+  public GroundIntake()
+  {
+    intake = new WPI_TalonSRX(9);
+    stowing = new WPI_TalonSRX(6);
+    groundBreakbeam = new DigitalInput(0);
+  }
+
+  public void stowIntake()
+  {
+    stowing.set(0.5);
+    Timer.delay(2);
+    stowing.stopMotor();
+  }
+
+  public void startIntake()
+  {
+    intake.set(1);
+  }
+
+  public void stopIntake()
+  {
+    intake.stopMotor();
+  }
+
+  public boolean panelDetected()
+  {
+    return !(groundBreakbeam.get());
+  }
+
+  public void drive()
+  {
+    intake.set(Robot.oi.getAnotherThrottle());
+    stowing.set(Robot.oi.getThrottle());
+  }
+
+  @Override
+  public void initDefaultCommand() 
+  {
+    // Set the default command for a subsystem here.
+    // setDefaultCommand(new MySpecialCommand());
+    setDefaultCommand(new DriveWithJoystick());
+
+  }
+
+  public void stop()
+  {
+    intake.stopMotor();
+    stowing.stopMotor();
+  }
+}
