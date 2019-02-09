@@ -29,6 +29,7 @@ public class Arm extends Subsystem {
   };
 
   public double setpoint;
+  public boolean isInverted;
   public DigitalInput hallEffect;
 
   public ArmState currState = ArmState.ZEROED;
@@ -36,11 +37,13 @@ public class Arm extends Subsystem {
   public Arm() {
 
     setpoint = 0;
+    isInverted = false;
 
-    Hardware.armOne = new TalonSRX(0);
-    Hardware.armTwo = new TalonSRX(1);
-    Hardware.armThree = new TalonSRX(2);
-    Hardware.armFour = new TalonSRX(3);
+    // 36 anbd 33 have encoders
+    Hardware.armOne = new TalonSRX(Constants.kArmOne);
+    Hardware.armTwo = new TalonSRX(Constants.kArmTwo);
+    Hardware.armThree = new TalonSRX(Constants.kArmThree);
+    Hardware.armFour = new TalonSRX(Constants.kArmFour);
 
     hallEffect = new DigitalInput(0);
 
@@ -52,6 +55,10 @@ public class Arm extends Subsystem {
     Hardware.armOne.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx,
         Constants.kTimeoutMs);
     Hardware.armOne.setSensorPhase(false);
+
+    Hardware.armTwo.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx,
+    Constants.kTimeoutMs);
+    Hardware.armTwo.setSensorPhase(false);
 
     /* Set relevant frame periods to be at least as fast as periodic rate. */
     Hardware.armOne.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
@@ -75,9 +82,17 @@ public class Arm extends Subsystem {
 
     /* zero the sensor */
     Hardware.armOne.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    Hardware.armTwo.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    
     // Hardware.armOne.configForwardSoftLimitThreshold((int)(UnitConverter.convertMetersToTicks(1.6)),
     // 0);
     // Hardware.armOne.configForwardSoftLimitEnable(true, 0);
+
+    Hardware.armOne.configPeakOutputReverse(-0.4);
+    Hardware.armOne.configPeakOutputForward(0.4);
+
+    Hardware.armTwo.setInverted(true);
+    Hardware.armFour.setInverted(true);
 
     new Notifier(new Runnable() {
       public void run() {
@@ -89,27 +104,34 @@ public class Arm extends Subsystem {
   }
 
   public void loop() {
+
+    if(setpoint > Constants.kMidEncoderValue)
+      isInverted = true;
+    if(setpoint < Constants.kMidEncoderValue)
+      isInverted = false;
+      
+    if(Robot.oi.getManual()){
+      updateState(ArmState.MANUAL);
+    }
+
     switch (currState) {
     case ZEROING:
       if (getArmEncoderValue() < Constants.kBottomTolerance) {
+          stop();
+      } else if (!hallEffect.get()) {
         updateState(ArmState.ZEROED);
-        stop();
-      } else if (hallEffect.get()) {
-        updateState(ArmState.ZEROED);
-        Hardware.armOne.setSelectedSensorPosition(0);
+      //  Hardware.armOne.setSelectedSensorPosition(0);
       }
-
       break;
     case SETPOINT:
       if (Math.abs(getArmEncoderValue() - setpoint) < Constants.kSetpointTolerance) {
+       //stop();
         // hold();
         // updateState(ArmState.HOLD);
       }
       break;
     case ZEROED:
-      if (hallEffect.get()) {
-        Hardware.armOne.setSelectedSensorPosition(0);
-      }
+      stop();
       break;
     case HOLD:
       // hold();
@@ -121,7 +143,7 @@ public class Arm extends Subsystem {
   }
 
   public double getArmEncoderValue() {
-    return Hardware.armOne.getSelectedSensorPosition();
+    return -Hardware.armOne.getSelectedSensorPosition(0);
   }
 
   public void hold() {
@@ -129,7 +151,7 @@ public class Arm extends Subsystem {
   }
 
   public void manualControl(double armThrottle) {
-    Hardware.armOne.set(ControlMode.PercentOutput, armThrottle * 0.5);
+    Hardware.armOne.set(ControlMode.PercentOutput, armThrottle);
   }
 
   public void updateState(ArmState state) {
@@ -143,18 +165,13 @@ public class Arm extends Subsystem {
   public void setArmSetpoint(double newSetpoint) {
     setpoint = newSetpoint;
     currState = ArmState.SETPOINT;
-    Hardware.armOne.set(ControlMode.Position, setpoint);
+    Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
   }
 
-  public void zeroArm(String direction) {
-
-    if (direction.equalsIgnoreCase("Forward")) {
-      setpoint = 0;
+  public void zeroArm() {
+      setpoint = Constants.kZero;
       currState = ArmState.ZEROING;
-    } else if (direction.equalsIgnoreCase("Backward")) {
-      setpoint = Constants.kMaxEncoderValue;
-      currState = ArmState.ZEROING;
-    }
+    
   }
 
   @Override

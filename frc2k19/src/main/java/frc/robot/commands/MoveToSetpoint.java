@@ -20,18 +20,13 @@ public class MoveToSetpoint extends InstantCommand {
   }
 
   protected void initialize() {
-    if(setpointTickValue == Constants.kMinEncoderValue)
-      Robot.arm.zeroArm("Forward");
-    else if(setpointTickValue == Constants.kMaxEncoderValue)
-      Robot.arm.zeroArm("Backward");
-    else
-      Robot.arm.setArmSetpoint(setpointTickValue);
-    
-    
+    if(setpointTickValue== Constants.kZero)
+      Robot.arm.zeroArm();
+    Robot.arm.setArmSetpoint(setpointTickValue);  
+  
   }
 
   protected void execute() {}
-
 
   protected void end() {}
 

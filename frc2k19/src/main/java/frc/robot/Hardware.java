@@ -24,4 +24,8 @@ public class Hardware {
     public static TalonSRX armTwo;
     public static TalonSRX armThree;
     public static TalonSRX armFour;
+
+
+    public static TalonSRX cargoIntakeTop;
+    public static TalonSRX cargoIntakeBottom;
 }

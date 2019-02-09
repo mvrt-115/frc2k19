@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.CargoIntake;
 import frc.robot.subsystems.Drivetrain;
 
 
@@ -26,6 +28,7 @@ public class Robot extends TimedRobot {
   public static Drivetrain drivetrain;
   public static Arm arm;
   public static OI oi;
+  public static CargoIntake cargoIntake;
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -39,6 +42,7 @@ public class Robot extends TimedRobot {
     oi = new OI(); 
     drivetrain = new Drivetrain();
     arm = new Arm();
+    cargoIntake = new CargoIntake();
 
   }
 
@@ -61,9 +65,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    Hardware.armOne.setSelectedSensorPosition(0);
   }
 
-  @Override
+
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
   }
@@ -120,7 +125,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    SmartDashboard.putNumber("Arm MotorOutput", Hardware.armOne.getMotorOutputPercent());
+    SmartDashboard.putNumber("Arm Setpoint", arm.setpoint);
+    SmartDashboard.putNumber("Arm Encoder Value", arm.getArmEncoderValue());
+    SmartDashboard.putNumber("Arm Encoder Value 2", Hardware.armTwo.getSelectedSensorPosition(0)); 
+    SmartDashboard.putBoolean("Limit Switch", arm.hallEffect.get());
+    SmartDashboard.putNumber("ERROR", (-arm.setpoint) - arm.getArmEncoderValue());
     Scheduler.getInstance().run();
+
+    
   }
 
   /**
