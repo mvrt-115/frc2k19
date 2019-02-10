@@ -28,7 +28,7 @@ public class DriveWithJoystick extends Command
   @Override
   protected void execute() 
   {
-    Robot.ground.drive();
+    //Robot.ground.drive();
   }
 
   // Make this return true when this Command no longer needs to run execute()

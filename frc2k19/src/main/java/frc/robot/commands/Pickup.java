@@ -30,28 +30,21 @@ public class Pickup extends Command {
   @Override
   protected void execute() 
   {
-    Robot.ground.startIntake();
+    Robot.ground.doIntake();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() 
   {
-    if(Robot.ground.panelDetected())
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
+    return Robot.ground.breakbeam.get();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() 
   {
-    Robot.ground.stopIntake();
+
   }
 
   // Called when another command which requires one or more of the same

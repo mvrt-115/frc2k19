@@ -37,7 +37,7 @@ public class Stow extends Command
   @Override
   protected boolean isFinished() 
   {
-    return true;
+    return !Robot.oi.stowPressed();
   }
 
   // Called once after isFinished returns true
