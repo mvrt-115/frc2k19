@@ -50,14 +50,11 @@ public class GroundIntake extends Subsystem {
   public void doIntake()
   {
     intake.set(1);
-    /*if(breakbeam.get())
-    {
-      intake.stopMotor();;
-    }
-    else
-    {
-      intake.set(1);
-    } */
+  }
+
+  public void stopIntake()
+  {
+    intake.stopMotor();
   }
 
   /* public void drive()
