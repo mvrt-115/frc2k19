@@ -7,42 +7,39 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.Constants;
 import frc.robot.Hardware;
 
 /**
  * Add your docs here.
  */
-public class CargoIntake extends Subsystem {
+
+public class PanelIntake extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  public CargoIntake() {
-    Hardware.cargoIntakeTop = new TalonSRX(Constants.kCargoIntakeTop);
-    Hardware.cargoIntakeBottom = new TalonSRX(Constants.kCargoIntakeBottom);
+  public PanelIntake() {
+    Hardware.claw = new DoubleSolenoid(1, 0);
+    Hardware.activeRelease = new DoubleSolenoid(3, 2);
 
   }
 
-  public void intakeCargo() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0.6);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.6);
+  public void extendIntake() {
+    Hardware.claw.set(Value.kForward);
   }
 
-  public void outtakeCargo() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -1);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -1);  
+  public void retractIntake() {
+    Hardware.activeRelease.set(Value.kReverse);
+    Timer.delay(1);
+    Hardware.claw.set(Value.kReverse);
+    Hardware.activeRelease.set(Value.kForward);
   }
 
-  public void stop() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0);  
-  }
 
-  
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.

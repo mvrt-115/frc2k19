@@ -20,9 +20,10 @@ public class MoveToSetpoint extends InstantCommand {
   }
 
   protected void initialize() {
-    if(setpointTickValue== Constants.kZero)
+    if(setpointTickValue == Constants.kZero)
       Robot.arm.zeroArm();
-    Robot.arm.setArmSetpoint(setpointTickValue);  
+    else
+      Robot.arm.setArmSetpoint(setpointTickValue);  
   
   }
 
