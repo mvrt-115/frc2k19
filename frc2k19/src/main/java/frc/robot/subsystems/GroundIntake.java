@@ -8,11 +8,15 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.AnalogOutput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Robot;
+import frc.robot.commands.Pickup;
 
 import frc.robot.commands.DriveWithJoystick;
 
@@ -25,13 +29,15 @@ public class GroundIntake extends Subsystem {
 
   public WPI_TalonSRX intake;
   public WPI_TalonSRX stowing;
-  public DigitalInput groundBreakbeam;
+  public DigitalInput breakbeam;
+  public AnalogOutput encoder;
 
   public GroundIntake()
   {
     intake = new WPI_TalonSRX(9);
     stowing = new WPI_TalonSRX(6);
-    groundBreakbeam = new DigitalInput(0);
+    breakbeam = new DigitalInput(0);
+    encoder = new AnalogOutput(1);
   }
 
   public void stowIntake()
@@ -41,33 +47,31 @@ public class GroundIntake extends Subsystem {
     stowing.stopMotor();
   }
 
-  public void startIntake()
+  public void doIntake()
   {
     intake.set(1);
+    /*if(breakbeam.get())
+    {
+      intake.stopMotor();;
+    }
+    else
+    {
+      intake.set(1);
+    } */
   }
 
-  public void stopIntake()
-  {
-    intake.stopMotor();
-  }
-
-  public boolean panelDetected()
-  {
-    return !(groundBreakbeam.get());
-  }
-
-  public void drive()
+  /* public void drive()
   {
     intake.set(Robot.oi.getAnotherThrottle());
     stowing.set(Robot.oi.getThrottle());
-  }
+  }*/
 
   @Override
   public void initDefaultCommand() 
   {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
-    setDefaultCommand(new DriveWithJoystick());
+    setDefaultCommand(new Pickup());
 
   }
 
