@@ -44,7 +44,7 @@ public class Pickup extends Command {
   @Override
   protected void end() 
   {
-
+    Robot.ground.stopIntake();
   }
 
   // Called when another command which requires one or more of the same
@@ -52,6 +52,6 @@ public class Pickup extends Command {
   @Override
   protected void interrupted() 
   {
-
+    Robot.ground.stopIntake();
   }
 }
