@@ -14,7 +14,8 @@ import frc.robot.commands.Stow;
 
 /**
  * This class is the glue that binds the controls on the physical operator
- * interface to the commands and command groups that allow control of the robot.
+ *
+ *  interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
   //// CREATING BUTTONS
@@ -51,15 +52,16 @@ public class OI {
 
   public OI()
   {
-    joystick = new Joystick(0);
+    joystick = new Joystick(1);
+   // groundIntake = new JoystickButton(joystick, 2);
+   // stow = new JoystickButton(joystick, 1);
     groundIntake = new JoystickButton(joystick, 2);
     stow = new JoystickButton(joystick, 1);
-
-    //groundIntake.whenPressed(new Pickup());
-    //stow.whenPressed(new Stow());
+    groundIntake.whenPressed(new Pickup());
+    stow.whenPressed(new Stow());
   }
 
-  public double getThrottle() 
+  /*public double getThrottle() 
   {
     return joystick.getRawAxis(5);
   }
@@ -67,8 +69,15 @@ public class OI {
   public double getAnotherThrottle()
   {
     return joystick.getRawAxis(1);
+  }*/
+
+  public boolean intakePressed() {
+    return groundIntake.get();
   }
 
+  public boolean stowPressed() {
+    return stow.get();
+  }
   public double getWheel() {
     return joystick.getRawAxis(0);
   }

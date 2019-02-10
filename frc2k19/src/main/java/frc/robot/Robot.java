@@ -23,8 +23,8 @@ import frc.robot.subsystems.GroundIntake;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static OI oi;
   public static GroundIntake ground;
+  public static OI oi;
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -35,8 +35,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    oi = new OI();
     ground = new GroundIntake();
+    oi = new OI();
      m_chooser.setDefaultOption("Default Auto", new DriveWithJoystick());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
@@ -120,6 +120,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    SmartDashboard.putBoolean("breakbeam value", !ground.breakbeam.get());
     Scheduler.getInstance().run();
   }
 
