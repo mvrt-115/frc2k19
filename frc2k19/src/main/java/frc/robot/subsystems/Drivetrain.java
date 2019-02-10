@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.commands.DriveWithJoystick;
 
@@ -37,10 +38,10 @@ public class Drivetrain extends Subsystem {
 
 
   public Drivetrain() {
-    Hardware.frontLeft = new CANSparkMax(4,CANSparkMaxLowLevel.MotorType.kBrushless);
-    Hardware.backLeft = new CANSparkMax(3,CANSparkMaxLowLevel.MotorType.kBrushless);
-    Hardware.frontRight = new CANSparkMax(1,CANSparkMaxLowLevel.MotorType.kBrushless);
-    Hardware.backRight = new CANSparkMax(2,CANSparkMaxLowLevel.MotorType.kBrushless);
+    Hardware.frontLeft = new CANSparkMax(Constants.kDriveFrontLeft,CANSparkMaxLowLevel.MotorType.kBrushless);
+    Hardware.backLeft = new CANSparkMax(Constants.kDriveBackLeft,CANSparkMaxLowLevel.MotorType.kBrushless);
+    Hardware.frontRight = new CANSparkMax(Constants.kDriveFrontRight,CANSparkMaxLowLevel.MotorType.kBrushless);
+    Hardware.backRight = new CANSparkMax(Constants.kDriveBackRight,CANSparkMaxLowLevel.MotorType.kBrushless);
 
     leftDrive = new SpeedControllerGroup(Hardware.frontLeft, Hardware.backLeft);
     rightDrive = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);

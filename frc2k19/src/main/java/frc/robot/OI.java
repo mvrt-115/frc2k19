@@ -9,6 +9,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.buttons.POVButton;
+import frc.robot.commands.IntakeCargo;
+import frc.robot.commands.IntakePanel;
+import frc.robot.commands.ManualControl;
+import frc.robot.commands.MoveToSetpoint;
+import frc.robot.commands.OuttakeCargo;
+import frc.robot.commands.OuttakePanel;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -17,11 +24,71 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 public class OI {
 
   Joystick driverJoystick;
+  Joystick operatorJoystick;
+ 
   JoystickButton quickTurn;
+  JoystickButton intakeCargo;
+  JoystickButton outtakeCargo;
+  POVButton intakePanel;
+  POVButton outtakePanel;
+
+
+  JoystickButton zero;
+  JoystickButton hatchBackwards;
+  JoystickButton cargoShipFront;
+  JoystickButton cargoShipBack;
+  JoystickButton cargoRocketFront;
+  JoystickButton cargoRocketBack;
+  JoystickButton cargoGroundIntake;
+
+  JoystickButton toggleManual;
 
   public OI () {
-    driverJoystick = new Joystick(0);
+    driverJoystick = new Joystick(1);
+    operatorJoystick = new Joystick(0);
+
+    zero = new JoystickButton(operatorJoystick, 1);   //A Button
+    cargoRocketFront = new JoystickButton(operatorJoystick, 2);
+    cargoShipFront = new JoystickButton(operatorJoystick, 3);
+    cargoShipBack = new JoystickButton(operatorJoystick, 4);
+    cargoRocketBack = new JoystickButton(operatorJoystick, 5);
+    hatchBackwards = new JoystickButton(operatorJoystick, 6);
+    cargoGroundIntake = new JoystickButton(operatorJoystick, 7);
+    
+    intakePanel = new POVButton(driverJoystick, 90);
+    outtakePanel = new POVButton(driverJoystick, 270);
+    
     quickTurn = new JoystickButton(driverJoystick, 5);
+    intakeCargo = new JoystickButton(driverJoystick, 2);
+    outtakeCargo = new JoystickButton(driverJoystick, 3);
+
+    toggleManual = new JoystickButton(operatorJoystick, 8);
+    
+    zero.whenPressed(new MoveToSetpoint(Constants.kZero));
+    toggleManual.whenPressed(new ManualControl());
+    cargoRocketFront.whenPressed(new MoveToSetpoint(Constants.kCargoRocketFront));
+    cargoRocketBack.whenPressed(new MoveToSetpoint(Constants.kCargoRocketBack));
+    cargoShipFront.whenPressed(new MoveToSetpoint(Constants.kCargoShipFront));
+    cargoShipBack.whenPressed(new MoveToSetpoint(Constants.kCargoShipBack));
+    hatchBackwards.whenPressed(new MoveToSetpoint(Constants.kHatchBack));
+    cargoGroundIntake.whenPressed(new MoveToSetpoint(Constants.kCargoIntakeLevel));
+  
+    intakeCargo.whenPressed(new IntakeCargo());
+    outtakeCargo.whenPressed(new OuttakeCargo());
+    intakeCargo.whenPressed(new IntakePanel());
+    outtakeCargo.whenPressed(new OuttakePanel());
+  }
+
+  public boolean getIntakeCargo() {
+    return intakeCargo.get();
+  }
+
+  public boolean getOuttakeCargo() {
+    return outtakeCargo.get();
+  }
+
+  public boolean getManual() {
+   return toggleManual.get(); 
   }
 
   public double getThrottle() {
@@ -34,6 +101,10 @@ public class OI {
 
   public boolean getQuickTurn() {
     return quickTurn.get();
+  }
+
+  public double getArmThrottle() {
+    return operatorJoystick.getRawAxis(1);
   }
 
 }

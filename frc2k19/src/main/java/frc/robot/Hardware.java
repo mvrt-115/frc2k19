@@ -7,7 +7,10 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
  * Add your docs here.
@@ -18,4 +21,17 @@ public class Hardware {
     public static CANSparkMax frontRight;
     public static CANSparkMax backLeft;
     public static CANSparkMax backRight;
+
+    public static TalonSRX armOne;
+    public static TalonSRX armTwo;
+    public static TalonSRX armThree;
+    public static TalonSRX armFour;
+
+
+    public static TalonSRX cargoIntakeTop;
+    public static TalonSRX cargoIntakeBottom;
+
+
+    public static DoubleSolenoid claw;
+    public static DoubleSolenoid activeRelease;
 }
