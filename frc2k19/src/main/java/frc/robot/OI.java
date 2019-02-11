@@ -48,8 +48,8 @@ public class OI {
     operatorJoystick = new Joystick(0);
 
     zero = new JoystickButton(operatorJoystick, 1);   //A Button
-    cargoRocketFront = new JoystickButton(operatorJoystick, 2);
-    cargoShipFront = new JoystickButton(operatorJoystick, 3);
+   // cargoRocketFront = new JoystickButton(operatorJoystick, 2);
+   // cargoShipFront = new JoystickButton(operatorJoystick, 3);
     cargoShipBack = new JoystickButton(operatorJoystick, 4);
     cargoRocketBack = new JoystickButton(operatorJoystick, 5);
     hatchBackwards = new JoystickButton(operatorJoystick, 6);
@@ -59,24 +59,24 @@ public class OI {
     outtakePanel = new POVButton(driverJoystick, 270);
     
     quickTurn = new JoystickButton(driverJoystick, 5);
-    intakeCargo = new JoystickButton(driverJoystick, 2);
-    outtakeCargo = new JoystickButton(driverJoystick, 3);
+    intakeCargo = new JoystickButton(operatorJoystick, 5);
+    outtakeCargo = new JoystickButton(operatorJoystick, 6);
 
     toggleManual = new JoystickButton(operatorJoystick, 8);
     
     zero.whenPressed(new MoveToSetpoint(Constants.kZero));
     toggleManual.whenPressed(new ManualControl());
-    cargoRocketFront.whenPressed(new MoveToSetpoint(Constants.kCargoRocketFront));
-    cargoRocketBack.whenPressed(new MoveToSetpoint(Constants.kCargoRocketBack));
-    cargoShipFront.whenPressed(new MoveToSetpoint(Constants.kCargoShipFront));
+   // cargoRocketFront.whenPressed(new MoveToSetpoint(Constants.kCargoRocketFront));
+    //cargoRocketBack.whenPressed(new MoveToSetpoint(Constants.kCargoRocketBack));
+    //cargoShipFront.whenPressed(new MoveToSetpoint(Constants.kCargoShipFront));
     cargoShipBack.whenPressed(new MoveToSetpoint(Constants.kCargoShipBack));
     hatchBackwards.whenPressed(new MoveToSetpoint(Constants.kHatchBack));
     cargoGroundIntake.whenPressed(new MoveToSetpoint(Constants.kCargoIntakeLevel));
   
     intakeCargo.whenPressed(new IntakeCargo());
     outtakeCargo.whenPressed(new OuttakeCargo());
-    intakeCargo.whenPressed(new IntakePanel());
-    outtakeCargo.whenPressed(new OuttakePanel());
+    //intakePanel.whenPressed(new IntakeCargo());
+    //outtakePanel.whenPressed(new OuttakeCargo());
   }
 
   public boolean getIntakeCargo() {

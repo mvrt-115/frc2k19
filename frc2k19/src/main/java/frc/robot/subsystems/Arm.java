@@ -95,7 +95,7 @@ public class Arm extends Subsystem {
     }).startPeriodic(0.005);
 
   }
-
+// test
 
   public void loop() {
   
@@ -127,11 +127,13 @@ public class Arm extends Subsystem {
         break;
       case HOLD:
         SmartDashboard.putString("armState", "hold");
+     //   hold();
         break;
       case MANUAL:
         SmartDashboard.putString("armState", "manual");
         manualControl(0.5 * Robot.oi.getArmThrottle());
         break;
+        
     }
   }  
   
@@ -145,7 +147,7 @@ public class Arm extends Subsystem {
   }
 
   public void manualControl(double armThrottle) {
-    Hardware.armOne.set(ControlMode.PercentOutput, armThrottle);
+    Hardware.armOne.set(ControlMode.PercentOutput, -armThrottle);
   }
 
   public void updateState(ArmState state) {

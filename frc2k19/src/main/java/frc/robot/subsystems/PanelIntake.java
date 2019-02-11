@@ -22,20 +22,26 @@ public class PanelIntake extends Subsystem {
   // here. Call these from Commands.
 
   public PanelIntake() {
-    Hardware.claw = new DoubleSolenoid(1, 0);
-    Hardware.activeRelease = new DoubleSolenoid(3, 2);
+    Hardware.claw = new DoubleSolenoid(1, 1, 0);
+    Hardware.activeRelease = new DoubleSolenoid(1, 3, 2);
 
   }
 
   public void extendIntake() {
+    Hardware.activeRelease.set(Value.kForward);
+    Timer.delay(0.5);
     Hardware.claw.set(Value.kForward);
+    Timer.delay(0.5);
+
+    Hardware.activeRelease.set(Value.kReverse);
   }
 
   public void retractIntake() {
-    Hardware.activeRelease.set(Value.kReverse);
-    Timer.delay(1);
-    Hardware.claw.set(Value.kReverse);
     Hardware.activeRelease.set(Value.kForward);
+    Timer.delay(0.5);
+    Hardware.claw.set(Value.kReverse);
+    //Timer.delay(0.5);
+    Hardware.activeRelease.set(Value.kReverse);
   }
 
 

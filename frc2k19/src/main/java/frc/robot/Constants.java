@@ -12,7 +12,7 @@ package frc.robot;
  */
 public class Constants {
 
-    public static final double kHoldVoltage = 1/12;
+    public static final double kHoldVoltage = 1.5/12;
     public static final int kBottomTolerance = 100;
 	public static final int kMidEncoderValue  = 0;
 	
@@ -30,7 +30,7 @@ public class Constants {
 	public static final int kMaxCruiseVelocity = 15000;
 
 	public static final int kZero = 0;  
-	public static final int kCargoRocketFront = 10000; //22956
+	public static final int kCargoRocketFront = 22956; //22956
 	public static final int kCargoRocketBack = 0;
 	public static final int kCargoShipFront = 0;
 	public static final int kCargoShipBack = 0;

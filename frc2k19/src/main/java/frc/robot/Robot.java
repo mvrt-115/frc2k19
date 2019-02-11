@@ -133,10 +133,11 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
+    c.start();
+
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;
     Hardware.armOne.setSelectedSensorPosition(0);
-    c.start();
   }
 
   /**
