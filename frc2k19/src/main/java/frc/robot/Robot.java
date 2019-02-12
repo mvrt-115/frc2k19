@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -51,6 +53,12 @@ public class Robot extends TimedRobot {
     panelIntake = new PanelIntake();
     c = new Compressor(0);
     c.setClosedLoopControl(true);
+
+
+    Hardware.armOne.setNeutralMode(NeutralMode.Coast);
+    Hardware.armTwo.setNeutralMode(NeutralMode.Coast);
+    Hardware.armThree.setNeutralMode(NeutralMode.Coast);
+    Hardware.armFour.setNeutralMode(NeutralMode.Coast);
   }
 
   /**
@@ -68,6 +76,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Arm Encoder Value", arm.getArmEncoderValue());
     SmartDashboard.putNumber("Arm Encoder Value 2", Hardware.armTwo.getSelectedSensorPosition(0)); 
     SmartDashboard.putBoolean("Limit Switch", arm.hallEffect1.get());
+    SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
   }
 
   /**
@@ -146,7 +155,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     SmartDashboard.putNumber("ERROR", (arm.setpoint) - arm.getArmEncoderValue());
-    SmartDashboard.putNumber("TalonError", Hardware.armOne.getClosedLoopError());
+    SmartDashboard.putNumber("Talon Error", Hardware.armOne.getClosedLoopError());
     Scheduler.getInstance().run(); 
   }
 
