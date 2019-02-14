@@ -7,18 +7,13 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.AnalogOutput;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Robot;
-import frc.robot.commands.Pickup;
-
-import frc.robot.commands.DriveWithJoystick;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
  * An example subsystem.  You can replace me with your own Subsystem.
@@ -30,20 +25,66 @@ public class GroundIntake extends Subsystem {
   public WPI_TalonSRX intake;
   public WPI_TalonSRX stowing;
   public DigitalInput breakbeam;
-  public AnalogOutput encoder;
+  public int dummyvalue;
+  public int anotherdummyvalue;
+  public int kTimeoutMs;
+  public int kSlotIdx;
+  public int kPIDLoopIdx;
+  public int kStowingF;
+  public int kStowingP;
+  public int kStowingI;
+  public int kStowingD;
+
+  public static int stowedPosition;
+
 
   public GroundIntake()
   {
     intake = new WPI_TalonSRX(9);
     stowing = new WPI_TalonSRX(6);
     breakbeam = new DigitalInput(0);
-    encoder = new AnalogOutput(1);
+    
+    stowing.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, dummyvalue, anotherdummyvalue);
+    stowing.setSensorPhase(true);
+    stowing.setInverted(false);
+
+    stowing.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
+    stowing.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
+        //no clue what these enums are 
+        
+    stowing.configNominalOutputForward(0, kTimeoutMs);
+    stowing.configNominalOutputReverse(0, kTimeoutMs);
+    stowing.configPeakOutputForward(1, kTimeoutMs);
+    stowing.configPeakOutputReverse(-1, kTimeoutMs);
+    
+    stowing.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
+
+    stowing.config_kF(0, kStowingF, kTimeoutMs);
+                               
+    stowing.config_kP(0, kStowingP, kTimeoutMs);
+    stowing.config_kI(0, kStowingI, kTimeoutMs);
+    stowing.config_kD(0, kStowingD, kTimeoutMs);
+        
+    stowing.configMotionCruiseVelocity(15000, kTimeoutMs);
+    stowing.configMotionAcceleration(6000, kTimeoutMs);
+        
+    stowing.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
   }
 
   public void stowIntake()
   {
-    stowing.set(0.5);
-    Timer.delay(2);
+    stowedPosition = stowing.getSelectedSensorPosition() + 1024;
+    stowing.set(ControlMode.Position, stowedPosition);
+  }
+
+  public void returnStow()
+  {
+    stowedPosition = stowing.getSelectedSensorPosition() - 1024;
+    stowing.set(ControlMode.Position, stowedPosition);
+  }
+
+  public void stopStowing()
+  {
     stowing.stopMotor();
   }
 
@@ -51,7 +92,7 @@ public class GroundIntake extends Subsystem {
   {
     intake.set(1);
   }
-
+  
   public void stopIntake()
   {
     intake.stopMotor();
@@ -68,8 +109,6 @@ public class GroundIntake extends Subsystem {
   {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
-    setDefaultCommand(new Pickup());
-
   }
 
   public void stop()
