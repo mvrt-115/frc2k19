@@ -16,6 +16,7 @@ import frc.robot.commands.ManualControl;
 import frc.robot.commands.MoveToSetpoint;
 import frc.robot.commands.OuttakeCargo;
 import frc.robot.commands.OuttakePanel;
+import frc.robot.commands.RetractIntake;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -28,6 +29,7 @@ public class OI {
  
   JoystickButton quickTurn;
   JoystickButton toggleManual;
+  JoystickButton visionControl;
   
   POVButton intakeCargo;
   POVButton outtakeCargo;
@@ -39,27 +41,31 @@ public class OI {
   JoystickButton cargoShipBack;
   JoystickButton cargoRocketBack;
   JoystickButton cargoGroundIntake;
+  JoystickButton panelActiveRetract;
 
 
   public OI () {
-    driverJoystick = new Joystick(1);
-    operatorJoystick = new Joystick(0);
+    driverJoystick = new Joystick(0);
+    operatorJoystick = new Joystick(1);
 
     zero = new JoystickButton(operatorJoystick, 1);   //A Button
+    cargoRocketBack = new JoystickButton(operatorJoystick, 2);
     cargoShipFront = new JoystickButton(operatorJoystick, 3);
     cargoShipBack = new JoystickButton(operatorJoystick, 4);
     cargoGroundIntake = new JoystickButton(operatorJoystick, 5);
-    cargoRocketBack = new JoystickButton(operatorJoystick, 2);
     toggleManual = new JoystickButton(operatorJoystick, 8);
 
+    panelActiveRetract = new JoystickButton(driverJoystick, 1);
+
     quickTurn = new JoystickButton(driverJoystick, 5);
+    visionControl = new JoystickButton(driverJoystick, 6);
 
     intakePanel = new POVButton(driverJoystick, 0);
     outtakePanel = new POVButton(driverJoystick, 180);
     intakeCargo = new POVButton(operatorJoystick, 0);
     outtakeCargo = new POVButton(operatorJoystick, 180);
-
     
+
     zero.whenPressed(new MoveToSetpoint(Constants.kZero));
     toggleManual.whenPressed(new ManualControl());
     cargoShipFront.whenPressed(new MoveToSetpoint(Constants.kCargoShipFront));
@@ -71,6 +77,8 @@ public class OI {
     outtakeCargo.whenPressed(new OuttakeCargo());
     intakePanel.whenPressed(new IntakePanel());
     outtakePanel.whenPressed(new OuttakePanel());
+
+    panelActiveRetract.whenPressed(new RetractIntake());
   }
 
   public boolean getIntakeCargo() {
@@ -99,6 +107,10 @@ public class OI {
 
   public double getArmThrottle() {
     return operatorJoystick.getRawAxis(1);
+  }
+
+  public boolean getVisionTurn() {
+    return visionControl.get();
   }
 
 }

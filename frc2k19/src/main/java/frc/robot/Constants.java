@@ -27,6 +27,8 @@ public class Constants {
 	public static final double kArmD = 0;
 	public static final double kArmF = 0;
 
+	public static final double kVisionTurnP = .02;
+
 	public static final int kMaxCruiseVelocity = 15000;
 
 	public static final int kZero = 2600;  

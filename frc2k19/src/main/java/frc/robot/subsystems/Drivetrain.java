@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleFunction;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
@@ -18,12 +19,21 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.commands.DriveWithJoystick;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
-/**
- * Add your docs here.
- */
+ 
 public class Drivetrain extends Subsystem {
-  
+ 
+  NetworkTable table; 
+  NetworkTableEntry tx; 
+  NetworkTableEntry ty; 
+  NetworkTableEntry ta;
+
+  public AHRS navX;
+
   //CANSparkMax frontLeft, frontRight, backLeft, backRight;
   SpeedControllerGroup leftDrive;
   SpeedControllerGroup rightDrive;
@@ -32,6 +42,10 @@ public class Drivetrain extends Subsystem {
   private double quickStopAccumulator = 0.0;
   private double wheelDeadBand = 0.03;
   private double throttleDeadBand = 0.02;
+
+
+  public double xAngle;
+  public double yAngle;
 
   private static final double SENSITIVITY = 0.90;
   private DoubleFunction<Double> limiter = limiter(-0.9, 0.9);
@@ -46,7 +60,41 @@ public class Drivetrain extends Subsystem {
     leftDrive = new SpeedControllerGroup(Hardware.frontLeft, Hardware.backLeft);
     rightDrive = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
     drive = new DifferentialDrive(leftDrive, rightDrive);
+  
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
+    ta = table.getEntry("ta");
+  
+    navX = new AHRS(SPI.Port.kMXP);
   }
+
+  public double getAngle() {
+    return tx.getDouble(0);
+  }
+
+  public double getYaw() {
+    return navX.getYaw();
+  }
+
+  public void switchPipeline(int number) {
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(number);
+
+  }
+
+  public void setCamMode(int number) {
+    // 0 = Vision, 1 = Driver
+    if(NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").getDouble(3) != number){
+      if(number == 1) 
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+      else if(number == 0)
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(number);
+    }
+
+  } 
+
 
   public void curvatureDrive(double speed, double wheel, boolean quickTurn) {
     drive.curvatureDrive(speed, wheel, quickTurn);
@@ -105,7 +153,17 @@ public class Drivetrain extends Subsystem {
           rightPwm = -1.0;
       }
       setLeftRightMotorOutputs(leftPwm, -rightPwm);
-    }  
+  }
+  
+  public void driveWithTarget(double throttle, double angle) {
+    double leftOutput = angle * Constants.kVisionTurnP;
+    double rightOutput = -angle * Constants.kVisionTurnP;
+
+    leftOutput += throttle;
+    rightOutput += throttle;
+
+    setLeftRightMotorOutputs(leftOutput, -rightOutput);
+  }
 
   public double handleDeadband(double val, double deadband) {
     return (Math.abs(val) > Math.abs(deadband)) ? val : 0.0;

@@ -27,10 +27,8 @@ public class Hardware {
     public static TalonSRX armThree;
     public static TalonSRX armFour;
 
-
     public static TalonSRX cargoIntakeTop;
     public static TalonSRX cargoIntakeBottom;
-
 
     public static DoubleSolenoid claw;
     public static DoubleSolenoid activeRelease;

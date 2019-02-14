@@ -99,6 +99,16 @@ public class Arm extends Subsystem {
 
   public void loop() {
   
+    if(!isInverted && getArmEncoderValue() > Constants.kMidEncoderValue){
+      isInverted = true;
+      Robot.drivetrain.switchPipeline(1);
+    }
+    
+    if(isInverted && getArmEncoderValue() < Constants.kMidEncoderValue) {
+      isInverted = false;
+      Robot.drivetrain.switchPipeline(0);
+    }
+    
     switch (currState) {
       case ZEROING:
         SmartDashboard.putString("Arm State", "zeroing");

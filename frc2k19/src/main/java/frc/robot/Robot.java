@@ -77,6 +77,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Arm Encoder Value 2", Hardware.armTwo.getSelectedSensorPosition(0)); 
     SmartDashboard.putBoolean("Limit Switch", arm.hallEffect1.get());
     SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
+    SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
   }
 
   /**

@@ -31,9 +31,9 @@ public class PanelIntake extends Subsystem {
     Hardware.activeRelease.set(Value.kForward);
     Timer.delay(0.5);
     Hardware.claw.set(Value.kForward);
-    Timer.delay(0.5);
+    //Timer.delay(0.5);
 
-    Hardware.activeRelease.set(Value.kReverse);
+    //Hardware.activeRelease.set(Value.kReverse);
   }
 
   public void retractIntake() {
@@ -41,6 +41,10 @@ public class PanelIntake extends Subsystem {
     Timer.delay(0.5);
     Hardware.claw.set(Value.kReverse);
     //Timer.delay(0.5);
+    //Hardware.activeRelease.set(Value.kReverse);
+  }
+
+  public void retractActiveIntake() {
     Hardware.activeRelease.set(Value.kReverse);
   }
 
