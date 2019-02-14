@@ -61,7 +61,8 @@ public class OI {
     stow.whenPressed(new Stow());
   }
 
-  /*public double getThrottle() 
+  /*
+  public double getThrottle() 
   {
     return joystick.getRawAxis(5);
   }
@@ -69,7 +70,7 @@ public class OI {
   public double getAnotherThrottle()
   {
     return joystick.getRawAxis(1);
-  }*/
+  } */
 
   public boolean intakePressed() {
     return groundIntake.get();
