@@ -27,6 +27,11 @@ public class Constants {
 	public static final double kArmD = 0;
 	public static final double kArmF = 0;
 
+	public static final double kPivotP = 0.0;
+	public static final double kPivotD = 0.0;
+	public static final double kPivotF = 0.0;
+
+
 	public static final double kVisionTurnP = .02;
 
 	public static final int kMaxCruiseVelocity = 15000;
@@ -37,10 +42,16 @@ public class Constants {
 	public static final int kCargoRocketBack = 0 ; 
 	public static final int kCargoIntakeLevel = 21000;
 
+	public static final int kStowIntake = 0;
+	public static final int kExtendIntake = 0;
+
 	public static final int kDriveFrontLeft = 4;
-	public static final int kDriveBackLeft = 3;
+	public static final int kDriveBackLeft = 8;
 	public static final int kDriveFrontRight = 1;
 	public static final int kDriveBackRight = 2;
+
+	public static final int kGroundPivot = 0;
+	public static final int kGroundIntake = 0;
 
 
 	public static final int kArmOne = 34;

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CargoIntake;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.GroundIntake;
 import frc.robot.subsystems.PanelIntake;
 import frc.robot.subsystems.Arm.ArmState;
 
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
   public static OI oi;
   public static CargoIntake cargoIntake;
   public static PanelIntake panelIntake;
+  public static GroundIntake groundIntake;
   public static Compressor c;
 
   Command m_autonomousCommand;
@@ -51,8 +53,9 @@ public class Robot extends TimedRobot {
     arm = new Arm();
     cargoIntake = new CargoIntake();
     panelIntake = new PanelIntake();
-    c = new Compressor(0);
-    c.setClosedLoopControl(true);
+    groundIntake = new GroundIntake();
+    //c = new Compressor(0);
+    //c.setClosedLoopControl(true);
 
 
     Hardware.armOne.setNeutralMode(NeutralMode.Coast);
@@ -71,13 +74,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Arm MotorOutput", Hardware.armOne.getMotorOutputPercent());
+ //   SmartDashboard.putNumber("Arm MotorOutput", Hardware.armOne.getMotorOutputPercent());
     SmartDashboard.putNumber("Arm Setpoint", arm.setpoint);
     SmartDashboard.putNumber("Arm Encoder Value", arm.getArmEncoderValue());
     SmartDashboard.putNumber("Arm Encoder Value 2", Hardware.armTwo.getSelectedSensorPosition(0)); 
     SmartDashboard.putBoolean("Limit Switch", arm.hallEffect1.get());
     SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
     SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
+    SmartDashboard.putNumber("Ground Encoder Value", Hardware.groundPivot.getSelectedSensorPosition());
+    SmartDashboard.putNumber("1", Hardware.frontLeft.get());
   }
 
   /**
@@ -143,7 +148,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    c.start();
+   // c.start();
 
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;
@@ -155,8 +160,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putNumber("ERROR", (arm.setpoint) - arm.getArmEncoderValue());
-    SmartDashboard.putNumber("Talon Error", Hardware.armOne.getClosedLoopError());
+   // SmartDashboard.putNumber("ERROR", (arm.setpoint) - arm.getArmEncoderValue());
+   // SmartDashboard.putNumber("Talon Error", Hardware.armOne.getClosedLoopError());
     Scheduler.getInstance().run(); 
   }
 

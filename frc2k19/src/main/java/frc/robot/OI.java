@@ -15,8 +15,10 @@ import frc.robot.commands.IntakePanel;
 import frc.robot.commands.ManualControl;
 import frc.robot.commands.MoveToSetpoint;
 import frc.robot.commands.OuttakeCargo;
+import frc.robot.commands.OuttakeHatchGround;
 import frc.robot.commands.OuttakePanel;
 import frc.robot.commands.RetractIntake;
+import frc.robot.commands.intakeHatchGround;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -35,6 +37,9 @@ public class OI {
   POVButton outtakeCargo;
   POVButton intakePanel;
   POVButton outtakePanel;
+  POVButton intakeGround;
+  POVButton outtakeGround;
+
 
   JoystickButton zero;
   JoystickButton cargoShipFront;
@@ -62,9 +67,11 @@ public class OI {
 
     intakePanel = new POVButton(driverJoystick, 0);
     outtakePanel = new POVButton(driverJoystick, 180);
+    intakeGround = new POVButton(driverJoystick, 90);
+    outtakeGround = new POVButton(driverJoystick, 270);
     intakeCargo = new POVButton(operatorJoystick, 0);
     outtakeCargo = new POVButton(operatorJoystick, 180);
-    
+ 
 
     zero.whenPressed(new MoveToSetpoint(Constants.kZero));
     toggleManual.whenPressed(new ManualControl());
@@ -72,7 +79,9 @@ public class OI {
     cargoShipBack.whenPressed(new MoveToSetpoint(Constants.kCargoShipBack));
     cargoRocketBack.whenPressed(new MoveToSetpoint(Constants.kCargoRocketBack));
     cargoGroundIntake.whenPressed(new MoveToSetpoint(Constants.kCargoIntakeLevel));
-  
+    intakeGround.whenPressed(new intakeHatchGround());
+    outtakeGround.whenPressed(new OuttakeHatchGround());
+
     intakeCargo.whenPressed(new IntakeCargo());
     outtakeCargo.whenPressed(new OuttakeCargo());
     intakePanel.whenPressed(new IntakePanel());
@@ -83,6 +92,14 @@ public class OI {
 
   public boolean getIntakeCargo() {
     return intakeCargo.get();
+  }
+
+  public boolean getGroundIntake(){
+    return intakeGround.get();
+  }
+
+  public boolean getGroundOuttake() {
+    return outtakeGround.get();
   }
 
   public boolean getOuttakeCargo() {
