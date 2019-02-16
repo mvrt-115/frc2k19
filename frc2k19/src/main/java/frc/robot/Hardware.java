@@ -8,9 +8,11 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import jaci.pathfinder.followers.EncoderFollower;
 
 /**
  * Add your docs here.
@@ -21,6 +23,14 @@ public class Hardware {
     public static CANSparkMax frontRight;
     public static CANSparkMax backLeft;
     public static CANSparkMax backRight;
+
+    public static CANEncoder frontLeftEncoder;
+    public static CANEncoder frontRightEncoder;
+    public static CANEncoder backLeftEncoder;
+    public static CANEncoder backRightEncoder;
+
+    public static EncoderFollower leftFollower;
+    public static EncoderFollower rightFollower;
 
     public static TalonSRX armOne;
     public static TalonSRX armTwo;

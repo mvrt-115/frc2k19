@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import java.util.function.DoubleFunction;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.commands.DriveWithJoystick;
+import jaci.pathfinder.followers.EncoderFollower;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -57,6 +59,14 @@ public class Drivetrain extends Subsystem {
     Hardware.frontRight = new CANSparkMax(Constants.kDriveFrontRight,CANSparkMaxLowLevel.MotorType.kBrushless);
     Hardware.backRight = new CANSparkMax(Constants.kDriveBackRight,CANSparkMaxLowLevel.MotorType.kBrushless);
 
+    Hardware.frontLeftEncoder = new CANEncoder(Hardware.frontLeft);
+    Hardware.frontRightEncoder = new CANEncoder(Hardware.frontRight);
+    Hardware.backLeftEncoder = new CANEncoder(Hardware.backLeft);
+    Hardware.backRightEncoder = new CANEncoder(Hardware.backRight);
+
+    Hardware.leftFollower = new EncoderFollower();
+    Hardware.rightFollower = new EncoderFollower();
+
     leftDrive = new SpeedControllerGroup(Hardware.frontLeft, Hardware.backLeft);
     rightDrive = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
     drive = new DifferentialDrive(leftDrive, rightDrive);
@@ -67,6 +77,15 @@ public class Drivetrain extends Subsystem {
     ta = table.getEntry("ta");
   
     navX = new AHRS(SPI.Port.kMXP);
+  }
+
+  public double getleftEncoderPosition() {
+    return (Hardware.frontLeftEncoder.getPosition() + Hardware.backLeftEncoder.getPosition())/2;
+  }
+
+  public double getRightEncoderPosition() {
+    return (Hardware.frontRightEncoder.getPosition() + Hardware.backRightEncoder.getPosition())/2;
+
   }
 
   public double getAngle() {
@@ -193,6 +212,9 @@ public class Drivetrain extends Subsystem {
   protected void initDefaultCommand() {
       setDefaultCommand(new DriveWithJoystick());
   }
+
+public void updateMotionFollowing() {
+}
   
   
 }
