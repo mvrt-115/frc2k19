@@ -12,12 +12,12 @@ package frc.robot;
  */
 public class Constants {
 
-    public static final double kHoldVoltage = 1/12;
-    public static final int kBottomTolerance = 100;
-	public static final int kMidEncoderValue  = 0;
+    public static final double kHoldVoltage = 1.5/12;
+	public static final int kMidEncoderValue  = 11000; //Find Exact Value
 	
+	public static final int kBottomTolerance = 3000;
 	public static final int kSetpointTolerance = 30;
-	
+	public static final int kBackTolerance = 21000;
 
 	public static final int kTimeoutMs = 0;
 	public static final int kSlotIdx = 0;
@@ -27,21 +27,31 @@ public class Constants {
 	public static final double kArmD = 0;
 	public static final double kArmF = 0;
 
+	public static final double kPivotP = 0.0;
+	public static final double kPivotD = 0.0;
+	public static final double kPivotF = 0.0;
+
+
+	public static final double kVisionTurnP = .02;
+
 	public static final int kMaxCruiseVelocity = 15000;
 
-	public static final int kZero = 0;  
-	public static final int kCargoRocketFront = 10000; //22956
-	public static final int kCargoRocketBack = 0;
-	public static final int kCargoShipFront = 0;
-	public static final int kCargoShipBack = 0;
-	public static final int kCargoIntakeLevel = 0;
-	public static final int kHatchBack = 0;
+	public static final int kZero = 2600;  
+	public static final int kCargoShipFront = 4000;
+	public static final int kCargoShipBack = 12500;
+	public static final int kCargoRocketBack = 0 ; 
+	public static final int kCargoIntakeLevel = 21000;
 
+	public static final int kStowIntake = 0;
+	public static final int kExtendIntake = 0;
 
 	public static final int kDriveFrontLeft = 4;
-	public static final int kDriveBackLeft = 3;
+	public static final int kDriveBackLeft = 8;
 	public static final int kDriveFrontRight = 1;
 	public static final int kDriveBackRight = 2;
+
+	public static final int kGroundPivot = 0;
+	public static final int kGroundIntake = 0;
 
 
 	public static final int kArmOne = 34;

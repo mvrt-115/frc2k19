@@ -15,7 +15,10 @@ import frc.robot.commands.IntakePanel;
 import frc.robot.commands.ManualControl;
 import frc.robot.commands.MoveToSetpoint;
 import frc.robot.commands.OuttakeCargo;
+import frc.robot.commands.OuttakeHatchGround;
 import frc.robot.commands.OuttakePanel;
+import frc.robot.commands.RetractIntake;
+import frc.robot.commands.intakeHatchGround;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -27,66 +30,82 @@ public class OI {
   Joystick operatorJoystick;
  
   JoystickButton quickTurn;
-  JoystickButton intakeCargo;
-  JoystickButton outtakeCargo;
+  JoystickButton toggleManual;
+  JoystickButton visionControl;
+  
+  POVButton intakeCargo;
+  POVButton outtakeCargo;
   POVButton intakePanel;
   POVButton outtakePanel;
+  POVButton intakeGround;
+  POVButton outtakeGround;
 
 
   JoystickButton zero;
-  JoystickButton hatchBackwards;
   JoystickButton cargoShipFront;
   JoystickButton cargoShipBack;
-  JoystickButton cargoRocketFront;
   JoystickButton cargoRocketBack;
   JoystickButton cargoGroundIntake;
+  JoystickButton panelActiveRetract;
 
-  JoystickButton toggleManual;
 
   public OI () {
-    driverJoystick = new Joystick(1);
-    operatorJoystick = new Joystick(0);
+    driverJoystick = new Joystick(0);
+    operatorJoystick = new Joystick(1);
 
     zero = new JoystickButton(operatorJoystick, 1);   //A Button
-    cargoRocketFront = new JoystickButton(operatorJoystick, 2);
+    cargoRocketBack = new JoystickButton(operatorJoystick, 2);
     cargoShipFront = new JoystickButton(operatorJoystick, 3);
     cargoShipBack = new JoystickButton(operatorJoystick, 4);
-    cargoRocketBack = new JoystickButton(operatorJoystick, 5);
-    hatchBackwards = new JoystickButton(operatorJoystick, 6);
-    cargoGroundIntake = new JoystickButton(operatorJoystick, 7);
-    
-    intakePanel = new POVButton(driverJoystick, 90);
-    outtakePanel = new POVButton(driverJoystick, 270);
-    
-    quickTurn = new JoystickButton(driverJoystick, 5);
-    intakeCargo = new JoystickButton(driverJoystick, 2);
-    outtakeCargo = new JoystickButton(driverJoystick, 3);
-
+    cargoGroundIntake = new JoystickButton(operatorJoystick, 5);
     toggleManual = new JoystickButton(operatorJoystick, 8);
-    
+
+    panelActiveRetract = new JoystickButton(driverJoystick, 1);
+
+    quickTurn = new JoystickButton(driverJoystick, 5);
+    visionControl = new JoystickButton(driverJoystick, 6);
+
+    intakePanel = new POVButton(driverJoystick, 0);
+    outtakePanel = new POVButton(driverJoystick, 180);
+    intakeGround = new POVButton(driverJoystick, 90);
+    outtakeGround = new POVButton(driverJoystick, 270);
+    intakeCargo = new POVButton(operatorJoystick, 0);
+    outtakeCargo = new POVButton(operatorJoystick, 180);
+ 
+
     zero.whenPressed(new MoveToSetpoint(Constants.kZero));
     toggleManual.whenPressed(new ManualControl());
-    cargoRocketFront.whenPressed(new MoveToSetpoint(Constants.kCargoRocketFront));
-    cargoRocketBack.whenPressed(new MoveToSetpoint(Constants.kCargoRocketBack));
     cargoShipFront.whenPressed(new MoveToSetpoint(Constants.kCargoShipFront));
     cargoShipBack.whenPressed(new MoveToSetpoint(Constants.kCargoShipBack));
-    hatchBackwards.whenPressed(new MoveToSetpoint(Constants.kHatchBack));
+    cargoRocketBack.whenPressed(new MoveToSetpoint(Constants.kCargoRocketBack));
     cargoGroundIntake.whenPressed(new MoveToSetpoint(Constants.kCargoIntakeLevel));
-  
+    intakeGround.whenPressed(new intakeHatchGround());
+    outtakeGround.whenPressed(new OuttakeHatchGround());
+
     intakeCargo.whenPressed(new IntakeCargo());
     outtakeCargo.whenPressed(new OuttakeCargo());
-    intakeCargo.whenPressed(new IntakePanel());
-    outtakeCargo.whenPressed(new OuttakePanel());
+    intakePanel.whenPressed(new IntakePanel());
+    outtakePanel.whenPressed(new OuttakePanel());
+
+    panelActiveRetract.whenPressed(new RetractIntake());
   }
 
   public boolean getIntakeCargo() {
     return intakeCargo.get();
   }
 
+  public boolean getGroundIntake(){
+    return intakeGround.get();
+  }
+
+  public boolean getGroundOuttake() {
+    return outtakeGround.get();
+  }
+
   public boolean getOuttakeCargo() {
     return outtakeCargo.get();
   }
-
+  
   public boolean getManual() {
    return toggleManual.get(); 
   }
@@ -105,6 +124,10 @@ public class OI {
 
   public double getArmThrottle() {
     return operatorJoystick.getRawAxis(1);
+  }
+
+  public boolean getVisionTurn() {
+    return visionControl.get();
   }
 
 }
