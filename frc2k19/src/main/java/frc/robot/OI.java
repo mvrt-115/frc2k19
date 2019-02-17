@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
+import frc.robot.commands.FollowProfile;
 import frc.robot.commands.IntakeCargo;
 import frc.robot.commands.IntakePanel;
 import frc.robot.commands.ManualControl;
@@ -17,6 +18,8 @@ import frc.robot.commands.MoveToSetpoint;
 import frc.robot.commands.OuttakeCargo;
 import frc.robot.commands.OuttakePanel;
 import frc.robot.commands.RetractIntake;
+import frc.robot.commands.ShootCargo;
+import frc.robot.commands.VisionProfile;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -24,8 +27,8 @@ import frc.robot.commands.RetractIntake;
  */
 public class OI {
 
-  Joystick driverJoystick;
-  Joystick operatorJoystick;
+  public Joystick driverJoystick;
+  public Joystick operatorJoystick;
  
   JoystickButton quickTurn;
   JoystickButton toggleManual;
@@ -33,8 +36,12 @@ public class OI {
   
   POVButton intakeCargo;
   POVButton outtakeCargo;
-  POVButton intakePanel;
-  POVButton outtakePanel;
+  POVButton shootCargo;
+  //POVButton intakePanel;
+  //POVButton outtakePanel;
+
+  JoystickButton intakePanel;
+  JoystickButton visionPath;
 
   JoystickButton zero;
   JoystickButton cargoShipFront;
@@ -55,16 +62,18 @@ public class OI {
     cargoGroundIntake = new JoystickButton(operatorJoystick, 5);
     toggleManual = new JoystickButton(operatorJoystick, 8);
 
-    panelActiveRetract = new JoystickButton(driverJoystick, 1);
-
+    panelActiveRetract = new  JoystickButton(driverJoystick, 1);
+    visionPath = new JoystickButton(driverJoystick,2);
     quickTurn = new JoystickButton(driverJoystick, 5);
     visionControl = new JoystickButton(driverJoystick, 6);
 
-    intakePanel = new POVButton(driverJoystick, 0);
-    outtakePanel = new POVButton(driverJoystick, 180);
-    intakeCargo = new POVButton(operatorJoystick, 0);
-    outtakeCargo = new POVButton(operatorJoystick, 180);
-    
+    intakePanel = new JoystickButton(operatorJoystick, 6);
+
+   // intakePanel = new POVButton(driverJoystick, 0);
+   // outtakePanel = new POVButton(driverJoystick, 180);
+    intakeCargo = new POVButton(operatorJoystick, 180);
+    outtakeCargo = new POVButton(operatorJoystick, 0);
+    shootCargo = new POVButton(operatorJoystick, 90);
 
     zero.whenPressed(new MoveToSetpoint(Constants.kZero));
     toggleManual.whenPressed(new ManualControl());
@@ -73,12 +82,15 @@ public class OI {
     cargoRocketBack.whenPressed(new MoveToSetpoint(Constants.kCargoRocketBack));
     cargoGroundIntake.whenPressed(new MoveToSetpoint(Constants.kCargoIntakeLevel));
   
+  //  visionPath.whenPressed(new VisionProfile());
+    visionPath.whenPressed(new FollowProfile());
+  shootCargo.whenPressed(new ShootCargo());
     intakeCargo.whenPressed(new IntakeCargo());
     outtakeCargo.whenPressed(new OuttakeCargo());
     intakePanel.whenPressed(new IntakePanel());
-    outtakePanel.whenPressed(new OuttakePanel());
+  //  outtakePanel.whenPressed(new OuttakePanel());
 
-    panelActiveRetract.whenPressed(new RetractIntake());
+   // panelActiveRetract.whenPressed(new RetractIntake());
   }
 
   public boolean getIntakeCargo() {
@@ -89,6 +101,9 @@ public class OI {
     return outtakeCargo.get();
   }
   
+  public boolean getShootCargo() {
+    return shootCargo.get();
+  }
   public boolean getManual() {
    return toggleManual.get(); 
   }

@@ -121,12 +121,18 @@ public class Arm extends Subsystem {
         Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
       }
       break;
-    case SETPOINT:
-      if (!hallEffect2.get()) {
-        updateState(ArmState.ZEROED);
-      } else if (getArmEncoderValue() > Constants.kBackTolerance) {
-        updateState(ArmState.ZEROED);
-      } else {
+    case SETPOINT:   
+      if(setpoint == Constants.kCargoIntakeLevel){
+        if (!hallEffect2.get()) {
+          updateState(ArmState.ZEROED);
+        } else if (getArmEncoderValue() > Constants.kBackTolerance) {
+          updateState(ArmState.ZEROED);
+        } else {
+          SmartDashboard.putString("Arm State", "setpoint");
+          Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
+        }
+      }
+      else{
         SmartDashboard.putString("Arm State", "setpoint");
         Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
       }

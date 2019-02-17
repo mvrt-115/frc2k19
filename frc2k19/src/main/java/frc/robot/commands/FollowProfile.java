@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
@@ -30,7 +31,12 @@ public class FollowProfile extends Command {
 	public Trajectory trajectory;
   public int counter;
   
-  public FollowProfile(Waypoint[] points) {
+  public FollowProfile() {
+
+    Waypoint[] points = new Waypoint[] { 
+      new Waypoint(0, 0, 0),
+      new Waypoint(1, 0, 0)};
+
     scheduler = Executors.newScheduledThreadPool(1);
 		Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, Constants.TIME_STEP, Constants.MAX_VELOCITY, Constants.MAX_ACCEL, Constants.MAX_JERK);
 		trajectory = Pathfinder.generate(points, config);
@@ -41,30 +47,34 @@ public class FollowProfile extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+
+    Hardware.leftFollower.setTrajectory(modifier.getLeftTrajectory());
+		Hardware.rightFollower.setTrajectory(modifier.getRightTrajectory());
+		Hardware.leftFollower.configureEncoder((int)(Robot.drivetrain.getleftEncoderPosition() * 42) , Constants.TICKS_PER_ROTATION, Constants.WHEEL_DIAMETER);
+		Hardware.rightFollower.configureEncoder((int)(Robot.drivetrain.getRightEncoderPosition() *42), Constants.TICKS_PER_ROTATION, Constants.WHEEL_DIAMETER);
     motionFollower = scheduler.scheduleAtFixedRate(new Runnable() {
 			public void run() {
 				Robot.drivetrain.updateMotionFollowing();
 			}
 			
-		}, (int)(Constants.TIME_STEP*1000), (int)(Constants.TIME_STEP*1000), TimeUnit.MILLISECONDS);
+		}, (int)(Constants.TIME_STEP*100), (int)(Constants.TIME_STEP*1000), TimeUnit.MILLISECONDS);
 		
-		Hardware.leftFollower.setTrajectory(modifier.getLeftTrajectory());
-		Hardware.rightFollower.setTrajectory(modifier.getRightTrajectory());
-		Hardware.leftFollower.configureEncoder((int)(Robot.drivetrain.getleftEncoderPosition() * 42) , Constants.TICKS_PER_ROTATION, Constants.WHEEL_DIAMETER);
-		Hardware.rightFollower.configureEncoder((int)(Robot.drivetrain.getRightEncoderPosition() *42), Constants.TICKS_PER_ROTATION, Constants.WHEEL_DIAMETER);
-		 
+    
+    
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    SmartDashboard.putNumber("INIT ", 3.0);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
 		return (Hardware.leftFollower.isFinished() && Hardware.rightFollower.isFinished());
-  }
+   // return false;
+}
 
   // Called once after isFinished returns true
   @Override

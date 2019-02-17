@@ -33,8 +33,13 @@ public class CargoIntake extends Subsystem {
   }
 
   public void outtakeCargo() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.4);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.4);
+    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.3);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.3);
+  }
+
+  public void shootCargo() {
+    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.7);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.7);
   }
 
   public void stop() {

@@ -39,9 +39,9 @@ public class Drivetrain extends Subsystem {
   public AHRS navX;
 
   // CANSparkMax frontLeft, frontRight, backLeft, backRight;
-  SpeedControllerGroup leftDrive;
-  SpeedControllerGroup rightDrive;
-  DifferentialDrive drive;
+  //SpeedControllerGroup leftDrive;
+  //SpeedControllerGroup rightDrive;
+  //DifferentialDrive drive;
 
   private double quickStopAccumulator = 0.0;
   private double wheelDeadBand = 0.03;
@@ -63,13 +63,15 @@ public class Drivetrain extends Subsystem {
     Hardware.frontRightEncoder = new CANEncoder(Hardware.frontRight);
     Hardware.backLeftEncoder = new CANEncoder(Hardware.backLeft);
     Hardware.backRightEncoder = new CANEncoder(Hardware.backRight);
-
     Hardware.leftFollower = new EncoderFollower();
     Hardware.rightFollower = new EncoderFollower();
 
-    leftDrive = new SpeedControllerGroup(Hardware.frontLeft, Hardware.backLeft);
-    rightDrive = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
-    drive = new DifferentialDrive(leftDrive, rightDrive);
+ //   leftDrive = new SpeedControllerGroup(Hardware.frontLeft, Hardware.backLeft);
+  //  rightDrive = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
+   // drive = new DifferentialDrive(leftDrive, rightDrive);
+
+   Hardware.leftFollower.configurePIDVA(0,0,0, 1/Constants.MAX_VELOCITY, 0);
+   Hardware.rightFollower.configurePIDVA(0,0,0, 1/Constants.MAX_VELOCITY, 0);
 
     table = NetworkTableInstance.getDefault().getTable("limelight");
     tx = table.getEntry("tx");
@@ -119,13 +121,18 @@ public class Drivetrain extends Subsystem {
   }
 
   public void switchPipeline(int number) {
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(number);
 
+    if(number == 3 || number == 4)
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+    else
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+  
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(number);
   }
 
   public void setCamMode(int number) {
     // 0 = Vision, 1 = Driver
-    if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").getDouble(3) != number) {
+  /*  if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").getDouble(3) != number) {
       if (number == 1)
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
       else if (number == 0)
@@ -134,10 +141,14 @@ public class Drivetrain extends Subsystem {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(number);
     }
 
+    */
+
+
+
   }
 
   public void curvatureDrive(double speed, double wheel, boolean quickTurn) {
-    drive.curvatureDrive(speed, wheel, quickTurn);
+    //drive.curvatureDrive(speed, wheel, quickTurn);
   }
 
   public void setLeftRightMotorOutputs(double left, double right) {
@@ -165,6 +176,7 @@ public class Drivetrain extends Subsystem {
       }
       overPower = 1.0;
       angularPower = wheel;
+      angularPower *= 0.3;
     } else {
       overPower = 0.0;
       angularPower = Math.abs(throttle) * wheel * SENSITIVITY - quickStopAccumulator;
@@ -199,6 +211,9 @@ public class Drivetrain extends Subsystem {
     double leftOutput = angle * Constants.kVisionTurnP;
     double rightOutput = -angle * Constants.kVisionTurnP;
 
+    if(Robot.arm.isInverted)
+      throttle *= -1;
+
     leftOutput += throttle;
     rightOutput += throttle;
 
@@ -230,10 +245,10 @@ public class Drivetrain extends Subsystem {
   }
 
   public void updateMotionFollowing() {
-    double leftOutput = Hardware.leftFollower.calculate((int) (Robot.drivetrain.getleftEncoderPosition() * 42));
+    double leftOutput =  Hardware.leftFollower.calculate((int) (-Robot.drivetrain.getleftEncoderPosition() * 42));
     double rightOutput = Hardware.rightFollower.calculate((int) (Robot.drivetrain.getRightEncoderPosition() * 42));
 
-    double gyro = navX.getAngle();
+   /* double gyro = navX.getAngle();
     double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(Hardware.leftFollower.getHeading()));
     double angleDifference = -(desiredHeading - gyro);
     double turn = 0.8 * (-1.0 / 80.0) * angleDifference;
@@ -244,6 +259,7 @@ public class Drivetrain extends Subsystem {
     leftOutput += turn;
     rightOutput -= turn;
 
+    */
     setLeftRightMotorOutputs(leftOutput, -rightOutput);
   }
 

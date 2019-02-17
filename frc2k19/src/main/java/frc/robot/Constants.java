@@ -34,11 +34,11 @@ public class Constants {
 	public static final int kZero = 2600;  
 	public static final int kCargoShipFront = 4000;
 	public static final int kCargoShipBack = 12500;
-	public static final int kCargoRocketBack = 0 ; 
+	public static final int kCargoRocketBack = 4800; 
 	public static final int kCargoIntakeLevel = 21000;
 
 	public static final int kDriveFrontLeft = 4;
-	public static final int kDriveBackLeft = 3;
+	public static final int kDriveBackLeft = 8;
 	public static final int kDriveFrontRight = 1;
 	public static final int kDriveBackRight = 2;
 
@@ -59,7 +59,7 @@ public class Constants {
 	public static final double MAX_VELOCITY = 4.572; // m/s  8
 	public static final double MAX_ACCEL = 1.99;  // 	8
 	public static final double MAX_JERK = 60; // 60
-	public static final double MAX_OFFSET = 20;
+	public static final double MAX_OFFSET = .20;
 	public static final double GEAR_RATIO = 8.8;
 	public static final int TICKS_PER_ROTATION = 42 * 9; 
 

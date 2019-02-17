@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.RetractIntake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CargoIntake;
 import frc.robot.subsystems.Drivetrain;
@@ -51,8 +52,8 @@ public class Robot extends TimedRobot {
     arm = new Arm();
     cargoIntake = new CargoIntake();
     panelIntake = new PanelIntake();
-    c = new Compressor(0);
-    c.setClosedLoopControl(true);
+//c = new Compressor(0);
+ //   c.setClosedLoopControl(true);
 
 
     Hardware.armOne.setNeutralMode(NeutralMode.Coast);
@@ -78,6 +79,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Limit Switch", arm.hallEffect1.get());
     SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
     SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
+    SmartDashboard.putNumber("Drivetrain Encoder", drivetrain.getleftEncoderPosition());
+    SmartDashboard.putNumber(" 2 Drivetrain Encoder", drivetrain.getRightEncoderPosition());
+
+    SmartDashboard.putNumber("Right Output ", Hardware.frontRight.getAppliedOutput());
+    SmartDashboard.putNumber("Left Output", Hardware.frontLeft.getAppliedOutput());
   }
 
   /**
@@ -135,6 +141,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    Hardware.frontLeftEncoder.setPosition(0);
+    Hardware.frontRightEncoder.setPosition(0);
+    Hardware.backLeftEncoder.setPosition(0);
+    Hardware.backRightEncoder.setPosition(0);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -143,7 +153,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    c.start();
+  //  c.start();
 
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;

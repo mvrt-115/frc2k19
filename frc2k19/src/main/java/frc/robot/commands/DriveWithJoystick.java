@@ -22,13 +22,19 @@ public class DriveWithJoystick extends Command {
 
   protected void execute() {
     if(Robot.oi.getVisionTurn()) {
-      Robot.drivetrain.setCamMode(0);
+      if(Robot.arm.isInverted)
+        Robot.drivetrain.switchPipeline(1);
+      else
+        Robot.drivetrain.switchPipeline(0);
       double angle = Robot.drivetrain.getAngle();
       Robot.drivetrain.driveWithTarget(Robot.oi.getThrottle(), angle);
     }
     else {
-      Robot.drivetrain.setCamMode(1);
-      Robot.drivetrain.cheesyDriveWithJoystick(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());   
+      if(Robot.arm.isInverted)
+        Robot.drivetrain.switchPipeline(4);
+      else
+        Robot.drivetrain.switchPipeline(3);
+      Robot.drivetrain.cheesyDriveWithJoystick(0.8 *Robot.oi.getThrottle(), 0.6 * Robot.oi.getWheel(), Robot.oi.getQuickTurn());   
     }
   }
 
