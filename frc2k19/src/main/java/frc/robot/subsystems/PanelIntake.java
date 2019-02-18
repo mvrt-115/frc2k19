@@ -38,7 +38,6 @@ public class PanelIntake extends Subsystem {
     }
     else if (Hardware.claw.get() == Value.kReverse){
       Hardware.claw.set(Value.kForward);
-      SmartDashboard.putNumber("INIT", 12);
     }else
       Hardware.activeRelease.set(Value.kReverse);
 
@@ -71,6 +70,8 @@ public class PanelIntake extends Subsystem {
     Hardware.claw.set(Value.kReverse);
     Timer.delay(0.25);
     Hardware.activeRelease.set(Value.kReverse);
+   // Timer.delay(3);
+    //Hardware.claw.set(Value.kForward);
   }
 
   @Override

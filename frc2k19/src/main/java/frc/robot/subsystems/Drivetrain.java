@@ -176,10 +176,11 @@ public class Drivetrain extends Subsystem {
       }
       overPower = 1.0;
       angularPower = wheel;
-      angularPower *= 0.3;
+      angularPower *= 0.6;
     } else {
       overPower = 0.0;
       angularPower = Math.abs(throttle) * wheel * SENSITIVITY - quickStopAccumulator;
+      angularPower *= 0.8;
       if (quickStopAccumulator > 1) {
         quickStopAccumulator -= 1;
       } else if (quickStopAccumulator < -1) {
