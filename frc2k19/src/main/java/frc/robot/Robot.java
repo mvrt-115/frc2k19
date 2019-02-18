@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.RetractIntake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.CargoIntake;
@@ -54,9 +55,6 @@ public class Robot extends TimedRobot {
     cargoIntake = new CargoIntake();
     panelIntake = new PanelIntake();
     groundIntake = new GroundIntake();
-    //c = new Compressor(0);
-    //c.setClosedLoopControl(true);
-
 
     Hardware.armOne.setNeutralMode(NeutralMode.Coast);
     Hardware.armTwo.setNeutralMode(NeutralMode.Coast);
@@ -81,9 +79,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Limit Switch", arm.hallEffect1.get());
     SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
     SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
+    SmartDashboard.putNumber("Drivetrain Encoder", drivetrain.getleftEncoderPosition());
+    SmartDashboard.putNumber(" 2 Drivetrain Encoder", drivetrain.getRightEncoderPosition());
+    SmartDashboard.putNumber("Right Output ", Hardware.frontRight.getAppliedOutput());
+    SmartDashboard.putNumber("Left Output", Hardware.frontLeft.getAppliedOutput());
     SmartDashboard.putNumber("Ground Encoder Value", Hardware.groundPivot.getSelectedSensorPosition());
     SmartDashboard.putNumber("Ground pivot output", Hardware.groundPivot.getMotorOutputPercent());
     SmartDashboard.putNumber("Ground pivot error", Hardware.groundPivot.getClosedLoopError());
+
   }
 
   /**
@@ -139,6 +142,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    Hardware.frontLeftEncoder.setPosition(0);
+    Hardware.frontRightEncoder.setPosition(0);
+    Hardware.backLeftEncoder.setPosition(0);
+    Hardware.backRightEncoder.setPosition(0);
 
     Hardware.groundPivot.setSelectedSensorPosition(0);
     // This makes sure that the autonomous stops running when
@@ -148,8 +155,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-   // c.start();
 
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;

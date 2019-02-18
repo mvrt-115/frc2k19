@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Hardware;
+import frc.robot.commands.RetractIntake;
 
 /**
  * Add your docs here.
@@ -28,31 +30,52 @@ public class PanelIntake extends Subsystem {
   }
 
   public void extendIntake() {
-    Hardware.activeRelease.set(Value.kForward);
-    Timer.delay(0.5);
-    Hardware.claw.set(Value.kForward);
-    //Timer.delay(0.5);
 
-    //Hardware.activeRelease.set(Value.kReverse);
+   // Hardware.claw.set(Value.kForward);
+    if (Hardware.activeRelease.get() == Value.kReverse){
+      Hardware.claw.set(Value.kReverse);
+      Hardware.activeRelease.set(Value.kForward);
+    }
+    else if (Hardware.claw.get() == Value.kReverse){
+      Hardware.claw.set(Value.kForward);
+    }else
+      Hardware.activeRelease.set(Value.kReverse);
+
+    // Hardware.activeRelease.set(Value.kForward);
+    // Timer.delay(0.5);
+    // Hardware.claw.set(Value.kForward);
+    // Timer.delay(0.5);
+
+    /*
+     * if(Hardware.activeRelease.get() ==Value.kForward)
+     * Hardware.activeRelease.set(Value.kReverse); else
+     * Hardware.activeRelease.set(Value.kForward);
+     */
+    // Hardware.activeRelease.set(Value.kReverse);
   }
 
   public void retractIntake() {
-    Hardware.activeRelease.set(Value.kForward);
-    Timer.delay(0.5);
-    Hardware.claw.set(Value.kReverse);
-    //Timer.delay(0.5);
-    //Hardware.activeRelease.set(Value.kReverse);
+
+    /*
+     * if(Hardware.claw.get() ==Value.kForward) Hardware.claw.set(Value.kReverse);
+     * else Hardware.claw.set(Value.kForward);
+     */
   }
 
   public void retractActiveIntake() {
+
+    
+    Hardware.activeRelease.set(Value.kForward);
+    Timer.delay(0.25);
+    Hardware.claw.set(Value.kReverse);
+    Timer.delay(0.25);
     Hardware.activeRelease.set(Value.kReverse);
+   // Timer.delay(3);
+    //Hardware.claw.set(Value.kForward);
   }
-
-
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
+    setDefaultCommand(new RetractIntake());
   }
 }

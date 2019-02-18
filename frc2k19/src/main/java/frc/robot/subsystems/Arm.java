@@ -49,7 +49,6 @@ public class Arm extends Subsystem {
 
     hallEffect1 = new DigitalInput(1);
     hallEffect2 = new DigitalInput(0);
-    
 
     Hardware.armTwo.follow(Hardware.armOne);
     Hardware.armThree.follow(Hardware.armOne);
@@ -58,9 +57,10 @@ public class Arm extends Subsystem {
     Hardware.armOne.setInverted(true);
     Hardware.armThree.setInverted(true);
     Hardware.armTwo.setInverted(false);
-    Hardware.armFour.setInverted(false);  
+    Hardware.armFour.setInverted(false);
 
-    Hardware.armOne.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    Hardware.armOne.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx,
+        Constants.kTimeoutMs);
 
     Hardware.armOne.setSensorPhase(false);
 
@@ -77,7 +77,7 @@ public class Arm extends Subsystem {
     Hardware.armOne.config_kF(0, Constants.kArmF, Constants.kTimeoutMs);
     Hardware.armOne.config_kP(0, Constants.kArmP, Constants.kTimeoutMs);
     Hardware.armOne.config_kD(0, Constants.kArmD, Constants.kTimeoutMs);
-    
+
     Hardware.armOne.configAllowableClosedloopError(Constants.kSlotIdx, 90, Constants.kTimeoutMs);
 
     Hardware.armOne.configMotionCruiseVelocity(15000, Constants.kTimeoutMs);
@@ -94,62 +94,63 @@ public class Arm extends Subsystem {
     }).startPeriodic(0.005);
 
   }
-// test
+  // test
 
   public void loop() {
-  
-    if(!isInverted && getArmEncoderValue() > Constants.kMidEncoderValue){
+
+    if (!isInverted && getArmEncoderValue() > Constants.kMidEncoderValue) {
       isInverted = true;
       Robot.drivetrain.switchPipeline(1);
     }
-    
-    if(isInverted && getArmEncoderValue() < Constants.kMidEncoderValue) {
+
+    if (isInverted && getArmEncoderValue() < Constants.kMidEncoderValue) {
       isInverted = false;
       Robot.drivetrain.switchPipeline(0);
     }
-    
+
     switch (currState) {
-      case ZEROING:
-        SmartDashboard.putString("Arm State", "zeroing");
-        if (getArmEncoderValue() < Constants.kBottomTolerance) {
-            stop();
-        } 
-        else if (!hallEffect1.get()) {
+    case ZEROING:
+      SmartDashboard.putString("Arm State", "zeroing");
+      if (getArmEncoderValue() < Constants.kBottomTolerance) {
+        stop();
+      } else if (!hallEffect1.get()) {
+        updateState(ArmState.ZEROED);
+        Hardware.armOne.setSelectedSensorPosition(0);
+      } else {
+        Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
+      }
+      break;
+    case SETPOINT:   
+      if(setpoint == Constants.kCargoIntakeLevel){
+        if (!hallEffect2.get()) {
           updateState(ArmState.ZEROED);
-          Hardware.armOne.setSelectedSensorPosition(0);
-        }
-        else {
-          Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
-        }
-        break;
-      case SETPOINT:
-        if(!hallEffect2.get()) {
-          updateState(ArmState.ZEROED); 
-        }
-        else if(getArmEncoderValue() > Constants.kBackTolerance){
+        } else if (getArmEncoderValue() > Constants.kBackTolerance) {
           updateState(ArmState.ZEROED);
-        }
-        else {
+        } else {
           SmartDashboard.putString("Arm State", "setpoint");
           Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
         }
-        break;
-      case ZEROED:
-        SmartDashboard.putString("Arm State", "zeroed");
-        stop();
-        break;
-      case HOLD:
-        SmartDashboard.putString("Arm State", "hold");
-     //   hold();
-        break;
-      case MANUAL:
-        SmartDashboard.putString("Arm State", "manual");
-        manualControl(0.5 * Robot.oi.getArmThrottle());
-        break;
-        
+      }
+      else{
+        SmartDashboard.putString("Arm State", "setpoint");
+        Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
+      }
+      break;
+    case ZEROED:
+      SmartDashboard.putString("Arm State", "zeroed");
+      stop();
+      break;
+    case HOLD:
+      SmartDashboard.putString("Arm State", "hold");
+      // hold();
+      break;
+    case MANUAL:
+      SmartDashboard.putString("Arm State", "manual");
+      manualControl(0.5 * Robot.oi.getArmThrottle());
+      break;
+
     }
-  }  
-  
+  }
 
   public double getArmEncoderValue() {
     return Hardware.armOne.getSelectedSensorPosition(0);
@@ -177,9 +178,10 @@ public class Arm extends Subsystem {
   }
 
   public void zeroArm() {
-      setpoint = Constants.kZero;
-      currState = ArmState.ZEROING;
+    setpoint = Constants.kZero;
+    currState = ArmState.ZEROING;
   }
 
-  public void initDefaultCommand() {}
+  public void initDefaultCommand() {
+  }
 }

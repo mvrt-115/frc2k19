@@ -8,39 +8,35 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
-public class RetractIntake extends Command {
-  public RetractIntake() {
-    requires(Robot.panelIntake);
+public class ShootCargo extends Command {
+  public ShootCargo() {
+    // Use requires() here to declare subsystem dependencies
+    // eg. requires(chassis);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    //SmartDashboard.putNumber("HERE", 1.0);
-    //Robot.panelIntake.retractActiveIntake();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.oi.operatorJoystick.getRawAxis(3) > 0.2){
-      Robot.panelIntake.retractActiveIntake();
-    }
-
+    Robot.cargoIntake.shootCargo();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return !Robot.oi.getShootCargo();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.cargoIntake.stop();
   }
 
   // Called when another command which requires one or more of the same

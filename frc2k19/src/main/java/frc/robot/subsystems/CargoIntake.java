@@ -33,16 +33,20 @@ public class CargoIntake extends Subsystem {
   }
 
   public void outtakeCargo() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.4);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.4);  
+    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.35);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.35);
+  }
+
+  public void shootCargo() {
+    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.7);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.7);
   }
 
   public void stop() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0);  
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0);
   }
 
-  
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
