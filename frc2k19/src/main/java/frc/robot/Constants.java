@@ -27,7 +27,7 @@ public class Constants {
 	public static final double kArmD = 0;
 	public static final double kArmF = 0;
 
-	public static final double kPivotP = 0.0;
+	public static final double kPivotP = 0.05;
 	public static final double kPivotD = 0.0;
 	public static final double kPivotF = 0.0;
 
