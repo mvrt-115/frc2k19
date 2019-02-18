@@ -92,9 +92,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    //arm.currState = ArmState.ZEROED;
-    //arm.setpoint = 0;
-    //Hardware.armOne.setSelectedSensorPosition(0);
+
   }
 
 
@@ -153,6 +151,7 @@ public class Robot extends TimedRobot {
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;
     Hardware.armOne.setSelectedSensorPosition(0);
+    
   }
 
   /**

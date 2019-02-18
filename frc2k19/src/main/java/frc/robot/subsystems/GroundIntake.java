@@ -23,6 +23,7 @@ public class GroundIntake extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
+
   public GroundIntake() {
     Hardware.groundIntake = new TalonSRX(Constants.kGroundIntake); 
     Hardware.groundPivot = new TalonSRX(Constants.kGroundPivot); 
@@ -55,6 +56,10 @@ public class GroundIntake extends Subsystem {
 
   public void stowIntake() {
     Hardware.groundPivot.set(ControlMode.MotionMagic, Constants.kStowIntake);
+  }
+
+  public void retractIntake() {
+    Hardware.groundPivot.set(ControlMode.MotionMagic, Constants.kDeployIntake);
   }
 
   public void extendIntake() {

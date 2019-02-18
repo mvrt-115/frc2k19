@@ -43,6 +43,7 @@ public class Constants {
 	public static final int kCargoIntakeLevel = 21000;
 
 	public static final int kStowIntake = 0;
+	public static final int kDeployIntake = 0;
 	public static final int kExtendIntake = 0;
 
 	public static final int kDriveFrontLeft = 4;
@@ -52,7 +53,6 @@ public class Constants {
 
 	public static final int kGroundPivot = 0;
 	public static final int kGroundIntake = 0;
-
 
 	public static final int kArmOne = 34;
 	public static final int kArmTwo = 35;
