@@ -31,12 +31,13 @@ public class OuttakeHatchGround extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return !Robot.oi.getGroundOuttake();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.groundIntake.retractIntake();
   }
 
   // Called when another command which requires one or more of the same

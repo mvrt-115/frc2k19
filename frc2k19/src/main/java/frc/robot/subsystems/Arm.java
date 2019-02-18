@@ -41,7 +41,7 @@ public class Arm extends Subsystem {
     setpoint = 0;
     isInverted = false;
 
-    // 36 anbd 33 have encoders
+    // 36 and 33 have encoders
     Hardware.armOne = new TalonSRX(Constants.kArmOne);
     Hardware.armTwo = new TalonSRX(Constants.kArmTwo);
     Hardware.armThree = new TalonSRX(Constants.kArmThree);
@@ -59,7 +59,6 @@ public class Arm extends Subsystem {
     Hardware.armThree.setInverted(true);
     Hardware.armTwo.setInverted(false);
     Hardware.armFour.setInverted(false);  
-    //Hardware.armTwo.setInverted(true);
 
     Hardware.armOne.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 

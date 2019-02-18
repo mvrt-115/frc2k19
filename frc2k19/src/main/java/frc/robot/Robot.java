@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.Compressor;
@@ -16,12 +17,11 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.CargoIntake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.GroundIntake;
 import frc.robot.subsystems.PanelIntake;
-import frc.robot.subsystems.Arm.ArmState;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -82,7 +82,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
     SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
     SmartDashboard.putNumber("Ground Encoder Value", Hardware.groundPivot.getSelectedSensorPosition());
-    SmartDashboard.putNumber("1", Hardware.frontLeft.get());
+    SmartDashboard.putNumber("Ground pivot output", Hardware.groundPivot.getMotorOutputPercent());
+    SmartDashboard.putNumber("Ground pivot error", Hardware.groundPivot.getClosedLoopError());
   }
 
   /**
@@ -92,9 +93,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    //arm.currState = ArmState.ZEROED;
-    //arm.setpoint = 0;
-    //Hardware.armOne.setSelectedSensorPosition(0);
+    Hardware.groundPivot.set(ControlMode.PercentOutput, 0.0);
   }
 
 
@@ -140,6 +139,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+
+    Hardware.groundPivot.setSelectedSensorPosition(0);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -153,6 +154,7 @@ public class Robot extends TimedRobot {
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;
     Hardware.armOne.setSelectedSensorPosition(0);
+    
   }
 
   /**
@@ -160,6 +162,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    
    // SmartDashboard.putNumber("ERROR", (arm.setpoint) - arm.getArmEncoderValue());
    // SmartDashboard.putNumber("Talon Error", Hardware.armOne.getClosedLoopError());
     Scheduler.getInstance().run(); 
