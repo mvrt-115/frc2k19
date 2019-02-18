@@ -63,7 +63,10 @@ public class GroundIntake extends Subsystem {
   }
 
   public void extendIntake() {
-    Hardware.groundPivot.set(ControlMode.MotionMagic, Constants.kExtendIntake);
+    if(Math.abs(Constants.kExtendIntake - Hardware.groundPivot.getSelectedSensorPosition(0)) < Constants.kGroundTolerance)
+      Hardware.groundIntake.set(ControlMode.PercentOutput, -0.07);
+    else
+      Hardware.groundPivot.set(ControlMode.MotionMagic, Constants.kExtendIntake);
   }
 
   public void intakeHatch(){

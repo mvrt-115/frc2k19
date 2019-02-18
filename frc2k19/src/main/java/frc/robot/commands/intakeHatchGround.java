@@ -19,19 +19,21 @@ public class intakeHatchGround extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.groundIntake.extendIntake();
+    
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.groundIntake.outtakeHatch();
+    Robot.groundIntake.extendIntake();
+    //Robot.groundIntake.outtakeHatch();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Robot.oi.getGroundIntake();
+    //return !Robot.oi.getGroundIntake();
+    return false;
   }
 
   // Called once after isFinished returns true

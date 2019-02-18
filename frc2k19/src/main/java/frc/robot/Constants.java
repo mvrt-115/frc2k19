@@ -23,14 +23,14 @@ public class Constants {
 	public static final int kSlotIdx = 0;
 	public static final int kPIDLoopIdx = 0;
 	
-	public static final double kArmP = 0.25;
+	public static final double kArmP = 0.2;
 	public static final double kArmD = 0;
 	public static final double kArmF = 0;
 
-	public static final double kPivotP = 0.05;
+	public static final double kPivotP = 0.25;
 	public static final double kPivotD = 0.0;
 	public static final double kPivotF = 0.0;
-
+	public static final double kGroundTolerance = 40;
 
 	public static final double kVisionTurnP = .02;
 
@@ -44,7 +44,7 @@ public class Constants {
 
 	public static final int kStowIntake = 0;
 	public static final int kDeployIntake = 0;
-	public static final int kExtendIntake = 0; 
+	public static final int kExtendIntake = 660; 
 
 	public static final int kDriveFrontLeft = 5; //4
 	public static final int kDriveBackLeft = 7; //8
