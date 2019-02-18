@@ -23,9 +23,14 @@ public class Constants {
 	public static final int kSlotIdx = 0;
 	public static final int kPIDLoopIdx = 0;
 	
-	public static final double kArmP = 0.25;
+	public static final double kArmP = 0.2;
 	public static final double kArmD = 0;
 	public static final double kArmF = 0;
+
+	public static final double kPivotP = 0.25;
+	public static final double kPivotD = 0.0;
+	public static final double kPivotF = 0.0;
+	public static final double kGroundTolerance = 40;
 
 	public static final double kVisionTurnP = .02;
 
@@ -37,19 +42,22 @@ public class Constants {
 	public static final int kCargoRocketBack = 4800; 
 	public static final int kCargoIntakeLevel = 21000;
 
-	public static final int kDriveFrontLeft = 4;
-	public static final int kDriveBackLeft = 8;
-	public static final int kDriveFrontRight = 1;
-	public static final int kDriveBackRight = 2;
+	public static final int kStowIntake = 0;
+	public static final int kDeployIntake = 0;
+	public static final int kExtendIntake = 660; 
 
+	public static final int kDriveFrontLeft = 5; //4
+	public static final int kDriveBackLeft = 7; //8
+	public static final int kDriveFrontRight = 3; //1
+	public static final int kDriveBackRight = 6; //2
 
-	public static final int kArmOne = 34;
-	public static final int kArmTwo = 35;
-	public static final int kArmThree = 33;
-	public static final int kArmFour = 36;
+	public static final int kGroundPivot = 20; //
+	public static final int kGroundIntake = 2; //
 
-	public static final int kCargoIntakeTop = 37;
-	public static final int kCargoIntakeBottom = 38;
+	public static final int kArmOne = 18; //34
+	public static final int kArmTwo = 4; //35
+	public static final int kArmThree = 22; //33
+	public static final int kArmFour = 8; //36 
 
 	//Pathfinder Constants
 
@@ -68,6 +76,7 @@ public class Constants {
 //	public static final double TARGET_HEIGHT = 0.7239; //Meters	//30 inches  // 71.4cm to Hatch Height
 //	public static final double CAMERA_ANGLE = 0;
 
-	
+	public static final int kCargoIntakeTop = 42; //37
+	public static final int kCargoIntakeBottom = 21; //38
 
 }

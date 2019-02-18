@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.Compressor;
@@ -17,11 +18,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.RetractIntake;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.CargoIntake;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.GroundIntake;
 import frc.robot.subsystems.PanelIntake;
-import frc.robot.subsystems.Arm.ArmState;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -36,6 +37,7 @@ public class Robot extends TimedRobot {
   public static OI oi;
   public static CargoIntake cargoIntake;
   public static PanelIntake panelIntake;
+  public static GroundIntake groundIntake;
   public static Compressor c;
 
   Command m_autonomousCommand;
@@ -52,9 +54,7 @@ public class Robot extends TimedRobot {
     arm = new Arm();
     cargoIntake = new CargoIntake();
     panelIntake = new PanelIntake();
-//c = new Compressor(0);
- //   c.setClosedLoopControl(true);
-
+    groundIntake = new GroundIntake();
 
     Hardware.armOne.setNeutralMode(NeutralMode.Coast);
     Hardware.armTwo.setNeutralMode(NeutralMode.Coast);
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Arm MotorOutput", Hardware.armOne.getMotorOutputPercent());
+ //   SmartDashboard.putNumber("Arm MotorOutput", Hardware.armOne.getMotorOutputPercent());
     SmartDashboard.putNumber("Arm Setpoint", arm.setpoint);
     SmartDashboard.putNumber("Arm Encoder Value", arm.getArmEncoderValue());
     SmartDashboard.putNumber("Arm Encoder Value 2", Hardware.armTwo.getSelectedSensorPosition(0)); 
@@ -81,9 +81,12 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
     SmartDashboard.putNumber("Drivetrain Encoder", drivetrain.getleftEncoderPosition());
     SmartDashboard.putNumber(" 2 Drivetrain Encoder", drivetrain.getRightEncoderPosition());
-
     SmartDashboard.putNumber("Right Output ", Hardware.frontRight.getAppliedOutput());
     SmartDashboard.putNumber("Left Output", Hardware.frontLeft.getAppliedOutput());
+    SmartDashboard.putNumber("Ground Encoder Value", Hardware.groundPivot.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Ground pivot output", Hardware.groundPivot.getMotorOutputPercent());
+    SmartDashboard.putNumber("Ground pivot error", Hardware.groundPivot.getClosedLoopError());
+
   }
 
   /**
@@ -93,9 +96,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    //arm.currState = ArmState.ZEROED;
-    //arm.setpoint = 0;
-    //Hardware.armOne.setSelectedSensorPosition(0);
+    Hardware.groundPivot.set(ControlMode.PercentOutput, 0.0);
   }
 
 
@@ -145,6 +146,8 @@ public class Robot extends TimedRobot {
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.backLeftEncoder.setPosition(0);
     Hardware.backRightEncoder.setPosition(0);
+
+    Hardware.groundPivot.setSelectedSensorPosition(0);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -153,11 +156,10 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-  //  c.start();
-
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;
     Hardware.armOne.setSelectedSensorPosition(0);
+    
   }
 
   /**
@@ -165,8 +167,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putNumber("ERROR", (arm.setpoint) - arm.getArmEncoderValue());
-    SmartDashboard.putNumber("Talon Error", Hardware.armOne.getClosedLoopError());
+    
+   // SmartDashboard.putNumber("ERROR", (arm.setpoint) - arm.getArmEncoderValue());
+   // SmartDashboard.putNumber("Talon Error", Hardware.armOne.getClosedLoopError());
     Scheduler.getInstance().run(); 
   }
 

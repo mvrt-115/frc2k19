@@ -40,6 +40,9 @@ public class Hardware {
     public static TalonSRX cargoIntakeTop;
     public static TalonSRX cargoIntakeBottom;
 
+    public static TalonSRX groundIntake;
+    public static TalonSRX groundPivot;
+
     public static DoubleSolenoid claw;
     public static DoubleSolenoid activeRelease;
 }
