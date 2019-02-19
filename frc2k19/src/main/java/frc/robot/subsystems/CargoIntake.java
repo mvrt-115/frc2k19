@@ -42,6 +42,7 @@ public class CargoIntake extends Subsystem {
     Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.7);
   }
 
+  //Test 
   public void stop() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0);
     Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0);
