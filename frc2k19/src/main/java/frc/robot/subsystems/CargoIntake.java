@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.Hardware;
+import frc.robot.commands.IntakeCargo;
 
 /**
  * Add your docs here.
@@ -28,18 +29,18 @@ public class CargoIntake extends Subsystem {
   }
 
   public void intakeCargo() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0.6);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.6);
+    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0.9);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.9);
   }
 
   public void outtakeCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.35);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.35);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.35);
   }
 
   public void shootCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.7);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.7);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.7);
   }
 
   //Test 
@@ -50,7 +51,7 @@ public class CargoIntake extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
+    setDefaultCommand(new IntakeCargo());
     // setDefaultCommand(new MySpecialCommand());
   }
 }
