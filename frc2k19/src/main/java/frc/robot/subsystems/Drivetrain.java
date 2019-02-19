@@ -190,8 +190,8 @@ public class Drivetrain extends Subsystem {
       }
     }
 
-    double rightPwm = throttle - angularPower;
-    double leftPwm = throttle + angularPower;
+    double rightPwm = throttle+ angularPower;
+    double leftPwm = throttle - angularPower;
     if (leftPwm > 1.0) {
       rightPwm -= overPower * (leftPwm - 1.0);
       leftPwm = 1.0;
@@ -205,20 +205,20 @@ public class Drivetrain extends Subsystem {
       leftPwm += overPower * (-1.0 - rightPwm);
       rightPwm = -1.0;
     }
-    setLeftRightMotorOutputs(leftPwm, -rightPwm);
+    setLeftRightMotorOutputs(Constants.kInvertedMotors * leftPwm, Constants.kInvertedMotors * (-rightPwm));
   }
 
   public void driveWithTarget(double throttle, double angle) {
-    double leftOutput = angle * Constants.kVisionTurnP;
-    double rightOutput = -angle * Constants.kVisionTurnP;
+    double leftOutput = -angle * Constants.kVisionTurnP;
+    double rightOutput = angle * Constants.kVisionTurnP;
 
     if(Robot.arm.isInverted)
       throttle *= -1;
-
+ 
     leftOutput += throttle;
     rightOutput += throttle;
 
-    setLeftRightMotorOutputs(leftOutput, -rightOutput);
+    setLeftRightMotorOutputs(Constants.kInvertedMotors * leftOutput, Constants.kInvertedMotors * (-rightOutput));
   }
 
   public double handleDeadband(double val, double deadband) {

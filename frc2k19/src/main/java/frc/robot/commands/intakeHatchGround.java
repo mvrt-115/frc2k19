@@ -8,10 +8,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Constants;
 import frc.robot.Robot;
 
-public class intakeHatchGround extends Command {
-  public intakeHatchGround() {
+public class IntakeHatchGround extends Command {
+  public IntakeHatchGround() {
+    //requires(Robot.cargoIntake);
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
   }
@@ -19,27 +21,26 @@ public class intakeHatchGround extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    
+    Robot.groundIntake.setIntakeSetpoint(Constants.kExtendIntake);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.groundIntake.extendIntake();
-    //Robot.groundIntake.outtakeHatch();
+    Robot.groundIntake.intakeHatch();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    //return !Robot.oi.getGroundIntake();
-    return false;
+    return !Robot.oi.getGroundIntake();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.groundIntake.retractIntake();
+    Robot.groundIntake.setIntakeSetpoint(Constants.kDeployIntake);
+    Robot.groundIntake.stop();
   }
 
   // Called when another command which requires one or more of the same

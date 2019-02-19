@@ -47,17 +47,17 @@ public class Arm extends Subsystem {
     Hardware.armThree = new TalonSRX(Constants.kArmThree);
     Hardware.armFour = new TalonSRX(Constants.kArmFour);
 
-    hallEffect1 = new DigitalInput(1);
-    hallEffect2 = new DigitalInput(0);
+    hallEffect1 = new DigitalInput(0);
+    hallEffect2 = new DigitalInput(1);
 
     Hardware.armTwo.follow(Hardware.armOne);
     Hardware.armThree.follow(Hardware.armOne);
     Hardware.armFour.follow(Hardware.armOne);
 
-    Hardware.armOne.setInverted(true);
-    Hardware.armThree.setInverted(true);
-    Hardware.armTwo.setInverted(false);
-    Hardware.armFour.setInverted(false);
+    Hardware.armOne.setInverted(false);
+    Hardware.armThree.setInverted(false);
+    Hardware.armTwo.setInverted(true);
+    Hardware.armFour.setInverted(true);
 
     Hardware.armOne.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx,
         Constants.kTimeoutMs);

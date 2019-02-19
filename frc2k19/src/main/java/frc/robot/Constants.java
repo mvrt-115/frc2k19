@@ -27,10 +27,11 @@ public class Constants {
 	public static final double kArmD = 0;
 	public static final double kArmF = 0;
 
-	public static final double kPivotP = 0.25;
+	public static final double kPivotP = 0.475;
 	public static final double kPivotD = 0.0;
 	public static final double kPivotF = 0.0;
-	public static final double kGroundTolerance = 40;
+	public static final double kGroundTolerance = 1550;
+	public static final double kStowTolerance = 50;
 
 	public static final double kVisionTurnP = .02;
 
@@ -43,21 +44,21 @@ public class Constants {
 	public static final int kCargoIntakeLevel = 21000;
 
 	public static final int kStowIntake = 0;
-	public static final int kDeployIntake = 0;
-	public static final int kExtendIntake = 660; 
+	public static final int kDeployIntake = 400;
+	public static final int kExtendIntake = 1550; 
 
-	public static final int kDriveFrontLeft = 4; //4 5
-	public static final int kDriveBackLeft = 8; //8 7
-	public static final int kDriveFrontRight = 1; //1 3
- 	public static final int kDriveBackRight = 2; //2 6 
+	public static final int kDriveFrontLeft = 5; //4 5
+	public static final int kDriveBackLeft = 7; //8 7
+	public static final int kDriveFrontRight = 3; //1 3
+ 	public static final int kDriveBackRight = 6; //2 6 
 
-	public static final int kGroundPivot = 20; // 
-	public static final int kGroundIntake = 2; //
+	public static final int kGroundPivot = 2; // 
+	public static final int kGroundIntake = 20; //
 
-	public static final int kArmOne = 34; //34 18
-	public static final int kArmTwo = 35; //35 4
-	public static final int kArmThree = 33; //33 22
-	public static final int kArmFour = 36; //36 8 
+	public static final int kArmOne = 8; //34 18
+	public static final int kArmTwo = 4; //35 4
+	public static final int kArmThree = 22; //33 22
+	public static final int kArmFour = 18; //36 8 
 
 	//Pathfinder Constants
 
@@ -76,7 +77,9 @@ public class Constants {
 //	public static final double TARGET_HEIGHT = 0.7239; //Meters	//30 inches  // 71.4cm to Hatch Height
 //	public static final double CAMERA_ANGLE = 0;
 
-	public static final int kCargoIntakeTop = 37; //37 42
-	public static final int kCargoIntakeBottom = 38; //38  21
+	public static final int kCargoIntakeTop = 42; //37 42
+	public static final int kCargoIntakeBottom = 21; //38  21
+
+	public static final int kInvertedMotors = -1; // comp bot inverted
 
 }

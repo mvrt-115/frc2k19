@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -26,21 +27,23 @@ public class CargoIntake extends Subsystem {
     Hardware.cargoIntakeTop = new TalonSRX(Constants.kCargoIntakeTop);
     Hardware.cargoIntakeBottom = new TalonSRX(Constants.kCargoIntakeBottom);
 
+    Hardware.cargoIntakeTop.setNeutralMode(NeutralMode.Brake);
+    Hardware.cargoIntakeBottom.setNeutralMode(NeutralMode.Brake);    
   }
 
   public void intakeCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0.9);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.9);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.9);
   }
 
   public void outtakeCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.35);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.35);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.35);
   }
 
   public void shootCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.7);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.7);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.7);
   }
 
   public void stop() {

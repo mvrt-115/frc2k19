@@ -11,22 +11,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
 import frc.robot.commands.FollowProfile;
-import frc.robot.commands.IntakeCargo;
+import frc.robot.commands.IntakeHatchGround;
 import frc.robot.commands.IntakePanel;
 import frc.robot.commands.ManualControl;
 import frc.robot.commands.MoveToSetpoint;
-import frc.robot.commands.OuttakeCargo;
 import frc.robot.commands.OuttakeClaw;
 import frc.robot.commands.OuttakeHatchGround;
-import frc.robot.commands.OuttakePanel;
-import frc.robot.commands.RetractIntake;
-
 import frc.robot.commands.ShootCargo;
-import frc.robot.commands.VisionProfile;
-
 import frc.robot.commands.StowGroundIntake;
-import frc.robot.commands.intakeHatchGround;
-
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -58,7 +50,7 @@ public class OI {
   JoystickButton cargoGroundIntake;
   POVButton extendClaw;
 
-  JoystickButton stowIntakeGround;
+  POVButton stowIntakeGround;
   POVButton intakeGround;
   POVButton outtakeGround;
 
@@ -92,9 +84,9 @@ public class OI {
   
     shootCargo = new JoystickButton(driverJoystick, 7);
     // ground intake
-    stowIntakeGround = new JoystickButton(driverJoystick, 7);
-    intakeGround = new POVButton(driverJoystick, 180);
-    outtakeGround = new POVButton(driverJoystick, 270);
+    stowIntakeGround = new POVButton(driverJoystick, 0);
+    intakeGround = new POVButton(driverJoystick, 90);
+    outtakeGround = new POVButton(driverJoystick, 180);
 
     extendClaw.whenPressed(new OuttakeClaw());
     zero.whenPressed(new MoveToSetpoint(Constants.kZero));
@@ -107,7 +99,7 @@ public class OI {
     visionPath.whenPressed(new FollowProfile());
     shootCargo.whenPressed(new ShootCargo());
 
-    intakeGround.whenPressed(new intakeHatchGround());
+    intakeGround.whenPressed(new IntakeHatchGround());
     outtakeGround.whenPressed(new OuttakeHatchGround());
     stowIntakeGround.whenPressed(new StowGroundIntake());
 
