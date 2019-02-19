@@ -31,8 +31,8 @@ public class OuttakeCargo extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
+    return false;
     //return !Robot.oi.getOuttakeCargo();
-    return !Robot.oi.getOuttakeCargo();
   }
 
   // Called once after isFinished returns true

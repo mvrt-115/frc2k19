@@ -70,8 +70,7 @@ public class PanelIntake extends Subsystem {
     Hardware.claw.set(Value.kReverse);
     Timer.delay(0.25);
     Hardware.activeRelease.set(Value.kReverse);
-   // Timer.delay(3);
-    //Hardware.claw.set(Value.kForward);
+    
   }
 
   @Override

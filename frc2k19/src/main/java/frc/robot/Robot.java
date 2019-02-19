@@ -10,6 +10,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -60,6 +61,9 @@ public class Robot extends TimedRobot {
     Hardware.armTwo.setNeutralMode(NeutralMode.Coast);
     Hardware.armThree.setNeutralMode(NeutralMode.Coast);
     Hardware.armFour.setNeutralMode(NeutralMode.Coast);
+
+    CameraServer.getInstance().startAutomaticCapture();
+
   }
 
   /**
@@ -80,7 +84,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
     SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
     SmartDashboard.putNumber("Drivetrain Encoder", drivetrain.getleftEncoderPosition());
-    SmartDashboard.putNumber(" 2 Drivetrain Encoder", drivetrain.getRightEncoderPosition());
+    SmartDashboard.putNumber("2 Drivetrain Encoder", drivetrain.getRightEncoderPosition());
     SmartDashboard.putNumber("Right Output ", Hardware.frontRight.getAppliedOutput());
     SmartDashboard.putNumber("Left Output", Hardware.frontLeft.getAppliedOutput());
     SmartDashboard.putNumber("Ground Encoder Value", Hardware.groundPivot.getSelectedSensorPosition());
