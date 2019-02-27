@@ -7,13 +7,14 @@
 
 package frc.robot.subsystems;
 
+import javax.lang.model.util.ElementScanner6;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Hardware;
-import frc.robot.commands.RetractIntake;
 
 /**
  * Add your docs here.
@@ -31,7 +32,6 @@ public class PanelIntake extends Subsystem {
 
   public void extendIntake() {
 
-   // Hardware.claw.set(Value.kForward);
     if (Hardware.activeRelease.get() == Value.kReverse){
       Hardware.claw.set(Value.kReverse);
       Hardware.activeRelease.set(Value.kForward);
@@ -41,40 +41,21 @@ public class PanelIntake extends Subsystem {
     }else
       Hardware.activeRelease.set(Value.kReverse);
 
-    // Hardware.activeRelease.set(Value.kForward);
-    // Timer.delay(0.5);
-    // Hardware.claw.set(Value.kForward);
-    // Timer.delay(0.5);
-
-    /*
-     * if(Hardware.activeRelease.get() ==Value.kForward)
-     * Hardware.activeRelease.set(Value.kReverse); else
-     * Hardware.activeRelease.set(Value.kForward);
-     */
-    // Hardware.activeRelease.set(Value.kReverse);
   }
 
-  public void retractIntake() {
+  public void retractIntake(int state) {
 
-    /*
-     * if(Hardware.claw.get() ==Value.kForward) Hardware.claw.set(Value.kReverse);
-     * else Hardware.claw.set(Value.kForward);
-     */
-  }
-
-  public void retractActiveIntake() {
-
-    
-    Hardware.activeRelease.set(Value.kForward);
-    Timer.delay(0.25);
-    Hardware.claw.set(Value.kReverse);
-    Timer.delay(0.25);
-    Hardware.activeRelease.set(Value.kReverse);
-    
-  }
+    if(state ==1) 
+       Hardware.activeRelease.set(Value.kForward);
+    else if(state ==2)
+      Hardware.claw.set(Value.kReverse);
+    else if(state ==3)
+       Hardware.activeRelease.set(Value.kReverse);
+    else 
+      Hardware.claw.set(Value.kForward);
+   }
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new RetractIntake());
   }
 }

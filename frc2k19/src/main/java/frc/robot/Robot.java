@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.RetractIntake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.CargoIntake;

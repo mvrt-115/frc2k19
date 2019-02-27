@@ -11,10 +11,9 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class IntakeCargo extends Command {
-  
+
   public IntakeCargo() {
-    requires(Robot.cargoIntake);
-    
+
   }
 
   // Called just before this Command runs the first time
@@ -25,21 +24,15 @@ public class IntakeCargo extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.oi.driverJoystick.getRawAxis(3) > 0.3)
-      Robot.cargoIntake.intakeCargo();
-    else if(Robot.oi.driverJoystick.getRawAxis(2) > 0.3)
-      Robot.cargoIntake.outtakeCargo();
-    else 
-      Robot.cargoIntake.stop();
-      
+    Robot.cargoIntake.intakeCargo();
+
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-  //  return !Robot.oi.getIntakeCargo();
-    return false;
-}
+    return !Robot.oi.getIntakeCargo();
+  }
 
   // Called once after isFinished returns true
   @Override

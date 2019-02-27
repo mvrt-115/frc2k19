@@ -53,7 +53,5 @@ public class CargoIntake extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new IntakeCargo());
-    // setDefaultCommand(new MySpecialCommand());
   }
 }
