@@ -33,8 +33,8 @@ public class OI {
   JoystickButton toggleManual;
   JoystickButton visionControl;
   
-  POVButton intakeCargo;
-  POVButton outtakeCargo;
+  JoystickTrigger intakeCargo;
+  JoystickTrigger outtakeCargo;
 
   JoystickButton shootCargo;
   //POVButton intakePanel;
@@ -77,16 +77,16 @@ public class OI {
     intakePanel = new JoystickButton(operatorJoystick, 6);
 
     // cargo intake
-//    intakeCargo = new POVButton(operatorJoystick, 180);
- //   outtakeCargo = new POVButton(operatorJoystick, 0);
+   // intakeCargo = new POVButton(operatorJoystick, 180);
+   // outtakeCargo = new POVButton(operatorJoystick, 0);
    // shootCargo = new POVButton(operatorJoystick, 90);
     
   
     shootCargo = new JoystickButton(driverJoystick, 7);
     // ground intake
-    stowIntakeGround = new POVButton(driverJoystick, 0);
-    intakeGround = new POVButton(driverJoystick, 90);
-    outtakeGround = new POVButton(driverJoystick, 180);
+    stowIntakeGround = new POVButton(operatorJoystick, 0);
+    intakeGround = new POVButton(operatorJoystick, 270);
+    outtakeGround = new POVButton(operatorJoystick, 90);
 
     extendClaw.whenPressed(new OuttakeClaw());
     zero.whenPressed(new MoveToSetpoint(Constants.kZero));

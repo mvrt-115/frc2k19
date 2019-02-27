@@ -190,8 +190,8 @@ public class Drivetrain extends Subsystem {
       }
     }
 
-    double rightPwm = throttle+ angularPower;
-    double leftPwm = throttle - angularPower;
+    double rightPwm = throttle-  Constants.kInvertedMotors * angularPower;
+    double leftPwm = throttle +Constants.kInvertedMotors *angularPower;
     if (leftPwm > 1.0) {
       rightPwm -= overPower * (leftPwm - 1.0);
       leftPwm = 1.0;

@@ -54,10 +54,20 @@ public class Arm extends Subsystem {
     Hardware.armThree.follow(Hardware.armOne);
     Hardware.armFour.follow(Hardware.armOne);
 
-    Hardware.armOne.setInverted(false);
-    Hardware.armThree.setInverted(false);
-    Hardware.armTwo.setInverted(true);
-    Hardware.armFour.setInverted(true);
+    if(Constants.kCompbot) {
+      Hardware.armOne.setInverted(false);
+      Hardware.armThree.setInverted(false);
+      Hardware.armTwo.setInverted(true);
+      Hardware.armFour.setInverted(true);
+    }
+
+    else {
+      Hardware.armOne.setInverted(true);
+      Hardware.armThree.setInverted(true);
+      Hardware.armTwo.setInverted(false);
+      Hardware.armFour.setInverted(false);
+
+    }
 
     Hardware.armOne.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx,
         Constants.kTimeoutMs);

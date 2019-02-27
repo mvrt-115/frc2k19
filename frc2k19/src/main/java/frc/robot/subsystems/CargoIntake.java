@@ -33,17 +33,17 @@ public class CargoIntake extends Subsystem {
 
   public void intakeCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0.9);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.9);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * 0.9);
   }
 
   public void outtakeCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.35);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.35);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.35);
   }
 
   public void shootCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.7);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.7);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors *-0.7);
   }
 
   public void stop() {
