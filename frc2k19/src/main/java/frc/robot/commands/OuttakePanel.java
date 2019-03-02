@@ -22,7 +22,7 @@ public class OuttakePanel extends Command {
   protected void initialize() {
     state = 1;
     Robot.panelIntake.retractIntake(1);
-    setTimeout(0.25);
+    setTimeout(0.4);
   
   }
 

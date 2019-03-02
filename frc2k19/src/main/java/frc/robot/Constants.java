@@ -17,14 +17,15 @@ public class Constants {
 	
 	public static final int kBottomTolerance = 3000;
 	public static final int kSetpointTolerance = 30;
-	public static final int kBackTolerance = 21000;
+	public static final int kBackTolerance2 = 18000; 
+	public static final int kBackTolerance = 20000;
 
 	public static final int kTimeoutMs = 0;
 	public static final int kSlotIdx = 0;
 	public static final int kPIDLoopIdx = 0;
 	
-	public static final double kArmP = 0.2;
-	public static final double kArmD = 0;
+	public static final double kArmP = 0.25;
+	public static final double kArmD = 0.058;
 	public static final double kArmF = 0;
 
 	public static final double kPivotP = 0.475;
@@ -81,6 +82,6 @@ public class Constants {
 	public static final int kCargoIntakeBottom = 38; //38  21
 
 	public static final int kInvertedMotors = 1; // comp bot inverted
-	public static final boolean kCompbot = false; 
+	public static final boolean kCompbot = false;
 
 }

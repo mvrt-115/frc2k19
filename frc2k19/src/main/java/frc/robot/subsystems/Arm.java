@@ -80,8 +80,8 @@ public class Arm extends Subsystem {
     Hardware.armOne.configNominalOutputForward(0, Constants.kTimeoutMs);
     Hardware.armOne.configNominalOutputReverse(0, Constants.kTimeoutMs);
 
-    Hardware.armOne.configPeakOutputForward(0.7, Constants.kTimeoutMs);
-    Hardware.armOne.configPeakOutputReverse(-0.7, Constants.kTimeoutMs);
+    Hardware.armOne.configPeakOutputForward(0.9, Constants.kTimeoutMs);
+    Hardware.armOne.configPeakOutputReverse(-0.9, Constants.kTimeoutMs);
 
     Hardware.armOne.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
     Hardware.armOne.config_kF(0, Constants.kArmF, Constants.kTimeoutMs);

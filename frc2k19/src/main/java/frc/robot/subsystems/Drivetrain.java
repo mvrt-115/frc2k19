@@ -209,8 +209,8 @@ public class Drivetrain extends Subsystem {
   }
 
   public void driveWithTarget(double throttle, double angle) {
-    double leftOutput = -angle * Constants.kVisionTurnP;
-    double rightOutput = angle * Constants.kVisionTurnP;
+    double leftOutput = angle * Constants.kVisionTurnP;
+    double rightOutput = -angle * Constants.kVisionTurnP;
 
     if(Robot.arm.isInverted)
       throttle *= -1;

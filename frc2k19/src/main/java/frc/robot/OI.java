@@ -73,7 +73,7 @@ public class OI {
 
     // hatch intake
     intakePanel = new JoystickButton(operatorJoystick, 6);
-    outtakePanel = new JoystickTrigger(driverJoystick, 3);
+    outtakePanel = new JoystickTrigger(operatorJoystick, 3);
     extendClaw = new POVButton(operatorJoystick, 180);
 
     intakeCargo = new JoystickTrigger(driverJoystick, 3);

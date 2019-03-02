@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Ground Encoder Value", Hardware.groundPivot.getSelectedSensorPosition());
     SmartDashboard.putNumber("Ground pivot output", Hardware.groundPivot.getMotorOutputPercent());
     SmartDashboard.putNumber("Ground pivot error", Hardware.groundPivot.getClosedLoopError());
-
+    SmartDashboard.putNumber("Arm Output", Hardware.armOne.getMotorOutputPercent());
   }
 
   /**
