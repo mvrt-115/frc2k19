@@ -10,14 +10,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
-import frc.robot.commands.FollowProfile;
 import frc.robot.commands.IntakeCargo;
 import frc.robot.commands.IntakeHatchGround;
 import frc.robot.commands.IntakePanel;
 import frc.robot.commands.ManualControl;
 import frc.robot.commands.MoveToSetpoint;
 import frc.robot.commands.OuttakeCargo;
-import frc.robot.commands.OuttakeClaw;
 import frc.robot.commands.OuttakeHatchGround;
 import frc.robot.commands.OuttakePanel;
 import frc.robot.commands.ShootCargo;
@@ -48,8 +46,7 @@ public class OI {
   JoystickButton cargoShipBack;
   JoystickButton cargoRocketBack;
   JoystickButton cargoGroundIntake;
-  POVButton extendClaw;
-
+  
   POVButton stowIntakeGround;
   POVButton intakeGround;
   POVButton outtakeGround;
@@ -74,7 +71,6 @@ public class OI {
     // hatch intake
     intakePanel = new JoystickButton(operatorJoystick, 6);
     outtakePanel = new JoystickTrigger(operatorJoystick, 3);
-    extendClaw = new POVButton(operatorJoystick, 180);
 
     intakeCargo = new JoystickTrigger(driverJoystick, 3);
     outtakeCargo = new JoystickTrigger(driverJoystick, 2);
@@ -101,7 +97,6 @@ public class OI {
 
     intakePanel.whenPressed(new IntakePanel());
     outtakePanel.whenActive(new OuttakePanel());
-    extendClaw.whenPressed(new OuttakeClaw());
 
   }
 

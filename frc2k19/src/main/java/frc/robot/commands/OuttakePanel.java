@@ -38,7 +38,7 @@ public class OuttakePanel extends Command {
     else if(state ==2 && isTimedOut()){
        state = 3;
        Robot.panelIntake.retractIntake(3);
-       setTimeout(3);
+       setTimeout(1.5);
     }
   }
 

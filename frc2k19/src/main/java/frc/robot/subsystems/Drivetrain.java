@@ -14,15 +14,12 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
+
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.commands.DriveWithJoystick;
-import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.followers.EncoderFollower;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.networktables.NetworkTable;
@@ -37,11 +34,6 @@ public class Drivetrain extends Subsystem {
   NetworkTableEntry ta;
 
   public AHRS navX;
-
-  // CANSparkMax frontLeft, frontRight, backLeft, backRight;
-  //SpeedControllerGroup leftDrive;
-  //SpeedControllerGroup rightDrive;
-  //DifferentialDrive drive;
 
   private double quickStopAccumulator = 0.0;
   private double wheelDeadBand = 0.03;
@@ -65,10 +57,6 @@ public class Drivetrain extends Subsystem {
     Hardware.backRightEncoder = new CANEncoder(Hardware.backRight);
     Hardware.leftFollower = new EncoderFollower();
     Hardware.rightFollower = new EncoderFollower();
-
- //   leftDrive = new SpeedControllerGroup(Hardware.frontLeft, Hardware.backLeft);
-  //  rightDrive = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
-   // drive = new DifferentialDrive(leftDrive, rightDrive);
 
    Hardware.leftFollower.configurePIDVA(0,0,0, 1/Constants.MAX_VELOCITY, 0);
    Hardware.rightFollower.configurePIDVA(0,0,0, 1/Constants.MAX_VELOCITY, 0);
@@ -130,20 +118,9 @@ public class Drivetrain extends Subsystem {
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(number);
   }
 
-  public void setCamMode(int number) {
-    // 0 = Vision, 1 = Driver
-  /*  if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").getDouble(3) != number) {
-      if (number == 1)
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
-      else if (number == 0)
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
 
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(number);
-    }
-
-    */
-
-
+  public void setLEDMode(int number) {
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(number);
 
   }
 

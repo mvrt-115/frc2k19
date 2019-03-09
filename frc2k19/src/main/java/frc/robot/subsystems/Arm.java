@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -80,8 +81,8 @@ public class Arm extends Subsystem {
     Hardware.armOne.configNominalOutputForward(0, Constants.kTimeoutMs);
     Hardware.armOne.configNominalOutputReverse(0, Constants.kTimeoutMs);
 
-    Hardware.armOne.configPeakOutputForward(0.9, Constants.kTimeoutMs);
-    Hardware.armOne.configPeakOutputReverse(-0.9, Constants.kTimeoutMs);
+    Hardware.armOne.configPeakOutputForward(0.85, Constants.kTimeoutMs);
+    Hardware.armOne.configPeakOutputReverse(-0.79, Constants.kTimeoutMs);
 
     Hardware.armOne.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
     Hardware.armOne.config_kF(0, Constants.kArmF, Constants.kTimeoutMs);
@@ -121,20 +122,22 @@ public class Arm extends Subsystem {
     switch (currState) {
     case ZEROING:
       SmartDashboard.putString("Arm State", "zeroing");
-      if (getArmEncoderValue() < Constants.kBottomTolerance) {
-        stop();
-      } else if (!hallEffect1.get()) {
+     
+      if (!hallEffect1.get()) {
         updateState(ArmState.ZEROED);
         Hardware.armOne.setSelectedSensorPosition(0);
+      } else if (getArmEncoderValue() < Constants.kBottomTolerance) {
+         SmartDashboard.putNumber("TEST", 12);
+     //    Hardware.armOne.set(ControlMode.PercentOutput, 0.038);
+          stop();
       } else {
         Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
       }
       break;
     case SETPOINT:   
       if(setpoint == Constants.kCargoIntakeLevel){
-        if (!hallEffect2.get()) {
-          updateState(ArmState.ZEROED);
-        } else if (getArmEncoderValue() > Constants.kBackTolerance) {
+
+         if (getArmEncoderValue() > Constants.kBackTolerance) {
           updateState(ArmState.ZEROED);
         } else {
           SmartDashboard.putString("Arm State", "setpoint");

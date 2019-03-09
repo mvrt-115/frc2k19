@@ -7,12 +7,11 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Hardware;
+import frc.robot.Robot;
 
-public class OuttakeClaw extends Command {
-  public OuttakeClaw() {
+public class FlashLimelight extends Command {
+  public FlashLimelight() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
   }
@@ -20,7 +19,8 @@ public class OuttakeClaw extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Hardware.claw.set(Value.kForward);
+    setTimeout(1.5);
+    Robot.drivetrain.setLEDMode(2);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -31,12 +31,15 @@ public class OuttakeClaw extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    if(isTimedOut())
+      return true;
+    return false;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.drivetrain.setLEDMode(1);
   }
 
   // Called when another command which requires one or more of the same

@@ -15,17 +15,17 @@ public class Constants {
     public static final double kHoldVoltage = 1.5/12;
 	public static final int kMidEncoderValue  = 11000; //Find Exact Value
 	
-	public static final int kBottomTolerance = 3000;
+	public static final int kBottomTolerance = 2100;
 	public static final int kSetpointTolerance = 30;
 	public static final int kBackTolerance2 = 18000; 
-	public static final int kBackTolerance = 20000;
+	public static final int kBackTolerance = 21000;
 
 	public static final int kTimeoutMs = 0;
 	public static final int kSlotIdx = 0;
 	public static final int kPIDLoopIdx = 0;
 	
-	public static final double kArmP = 0.25;
-	public static final double kArmD = 0.058;
+	public static final double kArmP = 0.15;   //0.25
+ 	public static final double kArmD = 0.06;  //0.058
 	public static final double kArmF = 0;
 
 	public static final double kPivotP = 0.475;
@@ -39,10 +39,11 @@ public class Constants {
 	public static final int kMaxCruiseVelocity = 15000;
 
 	public static final int kZero = 2600;  
+
 	public static final int kCargoShipFront = 4000;
 	public static final int kCargoShipBack = 12500;
-	public static final int kCargoRocketBack = 4800; 
-	public static final int kCargoIntakeLevel = 21000;
+	public static final int kCargoRocketBack = 5000; 
+	public static final int kCargoIntakeLevel = 20500;
 
 	public static final int kStowIntake = 0;
 	public static final int kDeployIntake = 400;
