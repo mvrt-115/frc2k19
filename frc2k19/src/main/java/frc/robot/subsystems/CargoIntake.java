@@ -46,14 +46,16 @@ public class CargoIntake extends Subsystem {
     if(Robot.arm.setpoint == Constants.kCargoRocketBack){
       Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.77);
       Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors *-0.77);
-    }else {
+    }else if(Robot.arm.setpoint == Constants.kCargoShipFront){
       Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.5);
       Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.5);
+    }else {
+      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.3);
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.3);
     }
   }
 
   public void shootCargo() {
-
     if(Robot.arm.setpoint == Constants.kCargoRocketBack){
       Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.9);
       Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors *-0.9);

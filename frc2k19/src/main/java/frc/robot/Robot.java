@@ -76,18 +76,18 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
  //   SmartDashboard.putNumber("Arm MotorOutput", Hardware.armOne.getMotorOutputPercent());
-    SmartDashboard.putNumber("Arm Setpoint", arm.setpoint);
+  //  SmartDashboard.putNumber("Arm Setpoint", arm.setpoint);
     SmartDashboard.putNumber("Arm Encoder Value", arm.getArmEncoderValue());
     SmartDashboard.putBoolean("Limit Switch", arm.hallEffect1.get());
 //    SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
-    SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
+ //   SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
     SmartDashboard.putNumber("Drivetrain Encoder", drivetrain.getleftEncoderPosition());
  //   SmartDashboard.putNumber("2 Drivetrain Encoder", drivetrain.getRightEncoderPosition());
    // SmartDashboard.putNumber("Right Output ", Hardware.frontRight.getAppliedOutput());
    // SmartDashboard.putNumber("Left Output", Hardware.frontLeft.getAppliedOutput());
     SmartDashboard.putNumber("Ground Encoder Value", Hardware.groundPivot.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Ground pivot output", Hardware.groundPivot.getMotorOutputPercent());
-    SmartDashboard.putNumber("Ground pivot error", Hardware.groundPivot.getClosedLoopError());
+  //  SmartDashboard.putNumber("Ground pivot output", Hardware.groundPivot.getMotorOutputPercent());
+   // SmartDashboard.putNumber("Ground pivot error", Hardware.groundPivot.getClosedLoopError());
     SmartDashboard.putNumber("Arm Output", Hardware.armOne.getMotorOutputPercent());
 
     SmartDashboard.putBoolean("Cargo BreakBeam", Robot.cargoIntake.breakbeam.get());
