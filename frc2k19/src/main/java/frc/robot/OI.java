@@ -10,23 +10,17 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
-import frc.robot.commands.FollowProfile;
+import frc.robot.commands.ExtendRelease;
 import frc.robot.commands.IntakeCargo;
+import frc.robot.commands.IntakeHatchGround;
 import frc.robot.commands.IntakePanel;
 import frc.robot.commands.ManualControl;
 import frc.robot.commands.MoveToSetpoint;
 import frc.robot.commands.OuttakeCargo;
-import frc.robot.commands.OuttakeClaw;
 import frc.robot.commands.OuttakeHatchGround;
 import frc.robot.commands.OuttakePanel;
-import frc.robot.commands.RetractIntake;
-
 import frc.robot.commands.ShootCargo;
-import frc.robot.commands.VisionProfile;
-
 import frc.robot.commands.StowGroundIntake;
-import frc.robot.commands.intakeHatchGround;
-
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -36,92 +30,81 @@ public class OI {
 
   public Joystick driverJoystick;
   public Joystick operatorJoystick;
- 
+
   JoystickButton quickTurn;
   JoystickButton toggleManual;
   JoystickButton visionControl;
-  
-  POVButton intakeCargo;
-  POVButton outtakeCargo;
 
+  JoystickTrigger intakeCargo;
+  JoystickTrigger outtakeCargo;
   JoystickButton shootCargo;
-  //POVButton intakePanel;
-  //POVButton outtakePanel;
 
   JoystickButton intakePanel;
-  JoystickButton visionPath;
+  JoystickTrigger outtakePanel;
 
   JoystickButton zero;
   JoystickButton cargoShipFront;
   JoystickButton cargoShipBack;
   JoystickButton cargoRocketBack;
   JoystickButton cargoGroundIntake;
-  POVButton extendClaw;
-
-  JoystickButton stowIntakeGround;
+  
+  POVButton stowIntakeGround;
   POVButton intakeGround;
   POVButton outtakeGround;
+  POVButton extendRelease;
 
-  public OI () {
+  public OI() {
     driverJoystick = new Joystick(0);
     operatorJoystick = new Joystick(1);
 
-    // arm 
-    zero = new JoystickButton(operatorJoystick, 1);   //A Button
+    // arm
+    zero = new JoystickButton(operatorJoystick, 1); // A Button
     cargoRocketBack = new JoystickButton(operatorJoystick, 2);
     cargoShipFront = new JoystickButton(operatorJoystick, 3);
     cargoShipBack = new JoystickButton(operatorJoystick, 4);
     cargoGroundIntake = new JoystickButton(operatorJoystick, 5);
     toggleManual = new JoystickButton(operatorJoystick, 8);
-    
-    extendClaw = new POVButton(operatorJoystick, 180);
+
     // drive
-    visionPath = new JoystickButton(driverJoystick,2);
+
     quickTurn = new JoystickButton(driverJoystick, 5);
     visionControl = new JoystickButton(driverJoystick, 6);
-  
-  
+
     // hatch intake
     intakePanel = new JoystickButton(operatorJoystick, 6);
+    outtakePanel = new JoystickTrigger(operatorJoystick, 3);
 
-    // cargo intake
-//    intakeCargo = new POVButton(operatorJoystick, 180);
- //   outtakeCargo = new POVButton(operatorJoystick, 0);
-   // shootCargo = new POVButton(operatorJoystick, 90);
-    
-  
+    intakeCargo = new JoystickTrigger(driverJoystick, 3);
+    outtakeCargo = new JoystickTrigger(driverJoystick, 2);
     shootCargo = new JoystickButton(driverJoystick, 7);
     // ground intake
-    stowIntakeGround = new JoystickButton(driverJoystick, 7);
-    intakeGround = new POVButton(driverJoystick, 180);
-    outtakeGround = new POVButton(driverJoystick, 270);
-
-    extendClaw.whenPressed(new OuttakeClaw());
+    stowIntakeGround = new POVButton(operatorJoystick, 0);
+    intakeGround = new POVButton(operatorJoystick, 270);
+    outtakeGround = new POVButton(operatorJoystick, 90);
+    extendRelease = new POVButton(driverJoystick, 180);
     zero.whenPressed(new MoveToSetpoint(Constants.kZero));
     toggleManual.whenPressed(new ManualControl());
     cargoShipFront.whenPressed(new MoveToSetpoint(Constants.kCargoShipFront));
     cargoShipBack.whenPressed(new MoveToSetpoint(Constants.kCargoShipBack));
     cargoRocketBack.whenPressed(new MoveToSetpoint(Constants.kCargoRocketBack));
     cargoGroundIntake.whenPressed(new MoveToSetpoint(Constants.kCargoIntakeLevel));
-    
-    visionPath.whenPressed(new FollowProfile());
-    shootCargo.whenPressed(new ShootCargo());
 
-    intakeGround.whenPressed(new intakeHatchGround());
+    shootCargo.whenPressed(new ShootCargo());
+    outtakeCargo.whenActive(new OuttakeCargo());
+    intakeCargo.whenActive(new IntakeCargo());
+
+    intakeGround.whenPressed(new IntakeHatchGround());
     outtakeGround.whenPressed(new OuttakeHatchGround());
     stowIntakeGround.whenPressed(new StowGroundIntake());
 
-    //intakeCargo.whenPressed(new IntakeCargo());
-    //outtakeCargo.whenPressed(new OuttakeCargo());
     intakePanel.whenPressed(new IntakePanel());
-  
+    outtakePanel.whenActive(new OuttakePanel());
+    extendRelease.whenPressed(new ExtendRelease());
   }
 
- /* public boolean getIntakeCargo() {
-    return intakeCargo.get();
-  }
-*/
-  public boolean getGroundIntake(){
+  
+
+  public boolean getGroundIntake() {
     return intakeGround.get();
   }
 
@@ -129,15 +112,20 @@ public class OI {
     return outtakeGround.get();
   }
 
- /* public boolean getOuttakeCargo() {
+  public boolean getOuttakeCargo() {
     return outtakeCargo.get();
   }
-  */
+  
+  public boolean getIntakeCargo() {
+    return intakeCargo.get();
+  }
+  
   public boolean getShootCargo() {
     return shootCargo.get();
   }
+
   public boolean getManual() {
-   return toggleManual.get(); 
+    return toggleManual.get();
   }
 
   public double getThrottle() {

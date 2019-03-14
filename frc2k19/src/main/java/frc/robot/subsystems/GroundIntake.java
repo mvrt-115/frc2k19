@@ -12,7 +12,9 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 
@@ -23,8 +25,17 @@ public class GroundIntake extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
+  public enum IntakeState {
+    ZEROED, ZEROING, SETPOINT, HOLD
+  };
+
+  public double setpoint;
+  public IntakeState currState = IntakeState.ZEROED;
 
   public GroundIntake() {
+
+    setpoint = 0;
+
     Hardware.groundIntake = new TalonSRX(Constants.kGroundIntake); 
     Hardware.groundPivot = new TalonSRX(Constants.kGroundPivot); 
 
@@ -52,35 +63,82 @@ public class GroundIntake extends Subsystem {
     Hardware.groundPivot.configMotionAcceleration(6000, Constants.kTimeoutMs);
 
     Hardware.groundPivot.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+
+    new Notifier(new Runnable() {
+
+      public void run() {
+        loop();
+      }
+
+    }).startPeriodic(0.005);
+
   }
 
-  public void stowIntake() {
-    Hardware.groundPivot.set(ControlMode.MotionMagic, Constants.kStowIntake);
-  }
+  public void loop() {
 
-  public void retractIntake() {
-    Hardware.groundPivot.set(ControlMode.MotionMagic, Constants.kDeployIntake);
-  }
-
-  public void extendIntake() {
-    if(Math.abs(Constants.kExtendIntake - Hardware.groundPivot.getSelectedSensorPosition(0)) < Constants.kGroundTolerance)
-      Hardware.groundIntake.set(ControlMode.PercentOutput, -0.07);
-    else
-      Hardware.groundPivot.set(ControlMode.MotionMagic, Constants.kExtendIntake);
+    switch (currState) {
+      case ZEROING:
+        SmartDashboard.putString("Intake State", "zeroing");
+        if (getIntakeEncoderValue() < Constants.kStowTolerance) {
+          stop();
+        } else {
+          Hardware.groundPivot.set(ControlMode.MotionMagic, setpoint);
+        }
+        break;
+      case SETPOINT:   
+        if(setpoint == Constants.kCargoIntakeLevel){
+          if (getIntakeEncoderValue() > Constants.kGroundTolerance) {
+            updateState(IntakeState.ZEROED);
+          } else {
+            SmartDashboard.putString("Intake State", "setpoint");
+            Hardware.groundPivot.set(ControlMode.MotionMagic, setpoint);
+          }
+        }
+        else{
+          SmartDashboard.putString("Intake State", "setpoint");
+          Hardware.groundPivot.set(ControlMode.MotionMagic, setpoint);
+        }
+        break;
+      case ZEROED:
+        SmartDashboard.putString("Intake State", "zeroed");
+        stop();
+        break;
+      case HOLD:
+        SmartDashboard.putString("Intake State", "hold");
+        // hold();
+        break;
+  
+      }
   }
 
   public void intakeHatch(){
-    Hardware.groundIntake.set(ControlMode.PercentOutput, 0.3);
+    Hardware.groundIntake.set(ControlMode.PercentOutput, -0.6);
   }
 
   public void outtakeHatch() {
-    Hardware.groundIntake.set(ControlMode.PercentOutput, -0.3);
+    Hardware.groundIntake.set(ControlMode.PercentOutput, 0.6);
   }
 
+  public double getIntakeEncoderValue() {
+    return Hardware.groundPivot.getSelectedSensorPosition(0);
+  }
 
+  public void updateState(IntakeState state) {
+    currState = state;
+  }
+
+  public void stop() {
+    Hardware.groundIntake.set(ControlMode.PercentOutput, 0);
+  }
+
+  public void setIntakeSetpoint(double newSetpoint) {
+    setpoint = newSetpoint;
+    currState = IntakeState.SETPOINT;
+  }
 
   @Override
   public void initDefaultCommand() {
+    //setDefaultCommand(new IntakeHatchGround());
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
   }

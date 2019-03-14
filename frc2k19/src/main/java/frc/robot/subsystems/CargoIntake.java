@@ -8,12 +8,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.Hardware;
-import frc.robot.commands.IntakeCargo;
+import frc.robot.Robot;
 
 /**
  * Add your docs here.
@@ -22,36 +24,56 @@ public class CargoIntake extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
+  public DigitalInput breakbeam;
+
   public CargoIntake() {
     Hardware.cargoIntakeTop = new TalonSRX(Constants.kCargoIntakeTop);
     Hardware.cargoIntakeBottom = new TalonSRX(Constants.kCargoIntakeBottom);
 
-  }
+    Hardware.cargoIntakeTop.setNeutralMode(NeutralMode.Brake);
+    Hardware.cargoIntakeBottom.setNeutralMode(NeutralMode.Brake);
+    
+    breakbeam = new DigitalInput(2);
+  } 
 
   public void intakeCargo() {
     Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0.9);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -0.9);
+    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * 0.9);
   }
 
   public void outtakeCargo() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.35);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.35);
+
+    if(Robot.arm.setpoint == Constants.kCargoRocketBack){
+      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.77);
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors *-0.77);
+    }else if(Robot.arm.setpoint == Constants.kCargoShipFront){
+      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.5);
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.5);
+    }else {
+      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.3);
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.3);
+    }
   }
 
   public void shootCargo() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.7);
-    Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0.7);
+    if(Robot.arm.setpoint == Constants.kCargoRocketBack){
+      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.9);
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors *-0.9);
+    }else {
+      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.3);
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors *-0.4);
+      
+    }
   }
 
   //Test 
   public void stop() {
-    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0);
+    Hardware.cargoIntakeTop.
+    set(ControlMode.PercentOutput, 0);
     Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0);
   }
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new IntakeCargo());
-    // setDefaultCommand(new MySpecialCommand());
   }
 }

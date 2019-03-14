@@ -37,7 +37,8 @@ public class ManualControl extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.arm.updateState(ArmState.HOLD);
+   // Robot.arm.updateState(ArmState.HOLD);
+    Robot.arm.setArmSetpoint(Robot.arm.getArmEncoderValue());
   }
 
   // Called when another command which requires one or more of the same

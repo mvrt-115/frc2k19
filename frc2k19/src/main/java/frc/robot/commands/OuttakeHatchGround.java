@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class OuttakeHatchGround extends Command {
@@ -19,13 +20,13 @@ public class OuttakeHatchGround extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.groundIntake.extendIntake();
+    Robot.groundIntake.setIntakeSetpoint(Constants.kExtendIntake);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.groundIntake.intakeHatch();
+    Robot.groundIntake.outtakeHatch();
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -37,7 +38,8 @@ public class OuttakeHatchGround extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.groundIntake.retractIntake();
+    Robot.groundIntake.setIntakeSetpoint(Constants.kStowIntake);
+    Robot.groundIntake.stop();
   }
 
   // Called when another command which requires one or more of the same

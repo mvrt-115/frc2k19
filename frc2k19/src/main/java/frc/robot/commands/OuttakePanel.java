@@ -11,32 +11,49 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class OuttakePanel extends Command {
+  
+  private int state;
   public OuttakePanel() {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+    state  = 1;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.panelIntake.retractIntake();
+    state = 1;
+    Robot.panelIntake.retractIntake(1);
+    setTimeout(0.4);
   
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+
+    if(state ==1 && isTimedOut()){
+      state = 2;
+      Robot.panelIntake.retractIntake(2);
+      setTimeout(0.25);
+    }
+    else if(state ==2 && isTimedOut()){
+       state = 3;
+       Robot.panelIntake.retractIntake(3);
+       setTimeout(1.5);
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    if(state == 3 && isTimedOut())
+      return true;
+    return false;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.panelIntake.retractIntake(4);
   }
 
   // Called when another command which requires one or more of the same

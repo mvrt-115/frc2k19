@@ -15,49 +15,52 @@ public class Constants {
     public static final double kHoldVoltage = 1.5/12;
 	public static final int kMidEncoderValue  = 11000; //Find Exact Value
 	
-	public static final int kBottomTolerance = 3000;
+	public static final int kBottomTolerance = 2100;
 	public static final int kSetpointTolerance = 30;
+	public static final int kBackTolerance2 = 18000; 
 	public static final int kBackTolerance = 21000;
 
 	public static final int kTimeoutMs = 0;
 	public static final int kSlotIdx = 0;
 	public static final int kPIDLoopIdx = 0;
 	
-	public static final double kArmP = 0.2;
-	public static final double kArmD = 0;
+	public static final double kArmP = 0.15;   //0.25
+ 	public static final double kArmD = 0.06;  //0.058
 	public static final double kArmF = 0;
 
-	public static final double kPivotP = 0.25;
+	public static final double kPivotP = 0.475;
 	public static final double kPivotD = 0.0;
 	public static final double kPivotF = 0.0;
-	public static final double kGroundTolerance = 40;
+	public static final double kGroundTolerance = 1550;
+	public static final double kStowTolerance = 50;
 
 	public static final double kVisionTurnP = .02;
 
 	public static final int kMaxCruiseVelocity = 15000;
 
 	public static final int kZero = 2600;  
+
 	public static final int kCargoShipFront = 4000;
 	public static final int kCargoShipBack = 12500;
-	public static final int kCargoRocketBack = 4800; 
-	public static final int kCargoIntakeLevel = 21000;
+	public static final int kCargoRocketBack = 5000; 
+	public static final int kCargoIntakeLevel = 20500;
 
 	public static final int kStowIntake = 0;
-	public static final int kDeployIntake = 0;
-	public static final int kExtendIntake = 660; 
+	public static final int kDeployIntake = 400;
+	public static final int kExtendIntake = 1550; 
 
-	public static final int kDriveFrontLeft = 4; //4 5
-	public static final int kDriveBackLeft = 8; //8 7
+	public static final int kDriveFrontLeft = 4;  //4 5
+	public static final int kDriveBackLeft = 8;   //8 7
 	public static final int kDriveFrontRight = 1; //1 3
  	public static final int kDriveBackRight = 2; //2 6 
 
-	public static final int kGroundPivot = 20; // 
-	public static final int kGroundIntake = 2; //
+	public static final int kGroundPivot = 31; // 2   31 
+	public static final int kGroundIntake = 32; // 20  32 
 
-	public static final int kArmOne = 34; //34 18
+	public static final int kArmOne = 34; //34 8
 	public static final int kArmTwo = 35; //35 4
 	public static final int kArmThree = 33; //33 22
-	public static final int kArmFour = 36; //36 8 
+	public static final int kArmFour = 36; //36 18 
 
 	//Pathfinder Constants
 
@@ -76,7 +79,10 @@ public class Constants {
 //	public static final double TARGET_HEIGHT = 0.7239; //Meters	//30 inches  // 71.4cm to Hatch Height
 //	public static final double CAMERA_ANGLE = 0;
 
-	public static final int kCargoIntakeTop = 37; //37 42
+	public static final int kCargoIntakeTop = 30; //30 42
 	public static final int kCargoIntakeBottom = 38; //38  21
+
+	public static final int kInvertedMotors = 1; // comp bot inverted
+	public static final boolean kCompbot = false;
 
 }
