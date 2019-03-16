@@ -80,6 +80,7 @@ public class GroundIntake extends Subsystem {
       case ZEROING:
         SmartDashboard.putString("Intake State", "zeroing");
         if (getIntakeEncoderValue() < Constants.kStowTolerance) {
+          updateState(IntakeState.ZEROED);
           stop();
         } else {
           Hardware.groundPivot.set(ControlMode.MotionMagic, setpoint);
@@ -88,8 +89,8 @@ public class GroundIntake extends Subsystem {
       case SETPOINT:   
         if(setpoint == Constants.kCargoIntakeLevel){
           if (getIntakeEncoderValue() > Constants.kGroundTolerance) {
-            updateState(IntakeState.ZEROED);
-          } else {
+            updateState(IntakeState.ZEROED);    
+          }else {
             SmartDashboard.putString("Intake State", "setpoint");
             Hardware.groundPivot.set(ControlMode.MotionMagic, setpoint);
           }
@@ -100,8 +101,12 @@ public class GroundIntake extends Subsystem {
         }
         break;
       case ZEROED:
-        SmartDashboard.putString("Intake State", "zeroed");
-        stop();
+        SmartDashboard.putString("Intake State", "zeroed");        
+        if(getIntakeEncoderValue() > 55){
+          setIntakeSetpoint(Constants.kStowIntake);
+        }else {
+          stop();
+        }
         break;
       case HOLD:
         SmartDashboard.putString("Intake State", "hold");
@@ -133,7 +138,11 @@ public class GroundIntake extends Subsystem {
 
   public void setIntakeSetpoint(double newSetpoint) {
     setpoint = newSetpoint;
-    currState = IntakeState.SETPOINT;
+    if(setpoint == Constants.kStowIntake)
+      currState = IntakeState.ZEROING;
+    else {
+      currState = IntakeState.SETPOINT;
+    }
   }
 
   @Override

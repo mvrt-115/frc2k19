@@ -127,7 +127,6 @@ public class Arm extends Subsystem {
         updateState(ArmState.ZEROED);
         Hardware.armOne.setSelectedSensorPosition(0);
       } else if (getArmEncoderValue() < Constants.kBottomTolerance) {
-         SmartDashboard.putNumber("TEST", 12);
      //    Hardware.armOne.set(ControlMode.PercentOutput, 0.038);
           stop();
       } else {

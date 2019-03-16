@@ -38,7 +38,7 @@ public class Constants {
 
 	public static final int kMaxCruiseVelocity = 15000;
 
-	public static final int kZero = 2600;  
+	public static final int kZero = 2300;  
 
 	public static final int kCargoShipFront = 4000;
 	public static final int kCargoShipBack = 12500;
@@ -46,21 +46,21 @@ public class Constants {
 	public static final int kCargoIntakeLevel = 20500;
 
 	public static final int kStowIntake = 0;
-	public static final int kDeployIntake = 400;
+	public static final int kDeployIntake = 500;
 	public static final int kExtendIntake = 1550; 
 
-	public static final int kDriveFrontLeft = 4;  //4 5
-	public static final int kDriveBackLeft = 8;   //8 7
-	public static final int kDriveFrontRight = 1; //1 3
- 	public static final int kDriveBackRight = 2; //2 6 
+	public static final int kDriveFrontLeft = 5;  //4 5
+	public static final int kDriveBackLeft = 7;   //8 7
+	public static final int kDriveFrontRight = 3; //1 3
+ 	public static final int kDriveBackRight = 6; //2 6 
 
-	public static final int kGroundPivot = 31; // 2   31 
-	public static final int kGroundIntake = 32; // 20  32 
+	public static final int kGroundPivot = 2; // 2   31 
+	public static final int kGroundIntake = 20; // 20  32 
 
-	public static final int kArmOne = 34; //34 8
-	public static final int kArmTwo = 35; //35 4
-	public static final int kArmThree = 33; //33 22
-	public static final int kArmFour = 36; //36 18 
+	public static final int kArmOne = 8; //34 8
+	public static final int kArmTwo = 4; //35 4
+	public static final int kArmThree = 22; //33 22
+	public static final int kArmFour = 18; //36 18 
 
 	//Pathfinder Constants
 
@@ -79,10 +79,10 @@ public class Constants {
 //	public static final double TARGET_HEIGHT = 0.7239; //Meters	//30 inches  // 71.4cm to Hatch Height
 //	public static final double CAMERA_ANGLE = 0;
 
-	public static final int kCargoIntakeTop = 30; //30 42
-	public static final int kCargoIntakeBottom = 38; //38  21
+	public static final int kCargoIntakeTop = 42; //30 42
+	public static final int kCargoIntakeBottom = 21; //38  21
 
-	public static final int kInvertedMotors = 1; // comp bot inverted
-	public static final boolean kCompbot = false;
+	public static final int kInvertedMotors = -1; // comp bot inverted
+	public static final boolean kCompbot = true;
 
 }

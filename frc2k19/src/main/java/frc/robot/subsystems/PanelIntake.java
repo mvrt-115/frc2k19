@@ -8,9 +8,11 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Hardware;
+import frc.robot.Robot;
 
 /**
  * Add your docs here.
@@ -34,6 +36,9 @@ public class PanelIntake extends Subsystem {
     }
     else if (Hardware.claw.get() == Value.kReverse){
       Hardware.claw.set(Value.kForward);
+      Robot.arm.setArmSetpoint(1000);
+      Timer.delay(0.5);
+      Robot.arm.setArmSetpoint(0);
     }else
       Hardware.activeRelease.set(Value.kReverse);
 
