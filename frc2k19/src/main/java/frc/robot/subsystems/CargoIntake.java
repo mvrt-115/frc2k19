@@ -49,8 +49,11 @@ public class CargoIntake extends Subsystem {
     }else if(Robot.arm.setpoint == Constants.kCargoShipFront){
       Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.5);
       Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.5);
+    } else if(Robot.arm.setpoint == Constants.kCargoShipBack){
+       Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.4);
+        Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.4); 
     }else {
-      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.3);
+     // Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.3);
       Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.3);
     }
   }

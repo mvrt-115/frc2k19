@@ -36,12 +36,13 @@ public class PanelIntake extends Subsystem {
     }
     else if (Hardware.claw.get() == Value.kReverse){
       Hardware.claw.set(Value.kForward);
-      Robot.arm.setArmSetpoint(1000);
-      Timer.delay(0.5);
-      Robot.arm.setArmSetpoint(0);
-    }else
+      Robot.arm.setArmSetpoint(1500);
+    //  Timer.delay(0.5);
+      
+    }else{
       Hardware.activeRelease.set(Value.kReverse);
-
+      Robot.arm.setArmSetpoint(0);
+    }
   }
 
   public void retractIntake(int state) {
