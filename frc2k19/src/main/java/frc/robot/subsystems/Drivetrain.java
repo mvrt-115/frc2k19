@@ -7,24 +7,31 @@
 
 package frc.robot.subsystems;
 
+import java.io.IOException;
 import java.util.function.DoubleFunction;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 
-
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.commands.DriveWithJoystick;
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.PathfinderFRC;
+import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Drivetrain extends Subsystem {
 
@@ -33,7 +40,13 @@ public class Drivetrain extends Subsystem {
   NetworkTableEntry ty;
   NetworkTableEntry ta;
 
+  private int k_ticks_per_rev = 42 * 9;
+  private double k_wheel_diameter = 0.56;
+  private double k_max_velocity = 17.5;
+  public String k_path_name = "";
+
   public AHRS navX;
+  private Notifier notifier;
 
   private double quickStopAccumulator = 0.0;
   private double wheelDeadBand = 0.03;
@@ -41,6 +54,8 @@ public class Drivetrain extends Subsystem {
 
   public double xAngle;
   public double yAngle;
+
+  private SpeedControllerGroup leftGroup, rightGroup;
 
   private static final double SENSITIVITY = 0.90;
   private DoubleFunction<Double> limiter = limiter(-0.9, 0.9);
@@ -58,8 +73,13 @@ public class Drivetrain extends Subsystem {
     Hardware.leftFollower = new EncoderFollower();
     Hardware.rightFollower = new EncoderFollower();
 
-   Hardware.leftFollower.configurePIDVA(0,0,0, 1/Constants.MAX_VELOCITY, 0);
-   Hardware.rightFollower.configurePIDVA(0,0,0, 1/Constants.MAX_VELOCITY, 0);
+    Hardware.frontLeftEncoder.setPosition(0);
+    Hardware.frontRightEncoder.setPosition(0);
+    Hardware.backLeftEncoder.setPosition(0);
+    Hardware.backRightEncoder.setPosition(0);
+
+    leftGroup = new SpeedControllerGroup(Hardware.frontLeft,Hardware.backLeft);
+    rightGroup = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
 
     table = NetworkTableInstance.getDefault().getTable("limelight");
     tx = table.getEntry("tx");
@@ -67,6 +87,65 @@ public class Drivetrain extends Subsystem {
     ta = table.getEntry("ta");
 
     navX = new AHRS(SPI.Port.kMXP);
+    navX.zeroYaw();
+
+    Hardware.frontLeft.setIdleMode(IdleMode.kCoast);
+		Hardware.backLeft.setIdleMode(IdleMode.kCoast);
+		Hardware.frontRight.setIdleMode(IdleMode.kCoast);
+    Hardware.backRight.setIdleMode(IdleMode.kCoast);
+
+    
+
+  }
+
+  public void initializePathFollower() {
+
+    navX.zeroYaw();
+
+    Hardware.frontLeft.setIdleMode(IdleMode.kBrake);
+		Hardware.backLeft.setIdleMode(IdleMode.kBrake);
+		Hardware.frontRight.setIdleMode(IdleMode.kBrake);
+    Hardware.backRight.setIdleMode(IdleMode.kBrake);
+
+    Trajectory left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
+    Trajectory right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
+    
+    Hardware.leftFollower = new EncoderFollower(left_trajectory);
+    Hardware.rightFollower = new EncoderFollower(right_trajectory);
+  
+    Hardware.leftFollower.configureEncoder((int)(Hardware.frontLeftEncoder.getPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
+    Hardware.leftFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / k_max_velocity, 0);
+
+    Hardware.rightFollower.configureEncoder((int)(-Hardware.frontLeftEncoder.getPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
+    Hardware. rightFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / k_max_velocity, 0);
+      
+    notifier = new Notifier(this::followPath);
+    notifier.startPeriodic(left_trajectory.get(0).dt);
+
+  }
+
+  public void followPath() {
+    if (Hardware.leftFollower.isFinished() || Hardware.rightFollower.isFinished()) {
+      SmartDashboard.putBoolean("stop", true);
+      notifier.stop();
+      leftGroup.set(0);
+      rightGroup.set(0);
+
+    } 
+    
+    else {
+      SmartDashboard.putBoolean("start", true);
+
+      double left_speed = Hardware.leftFollower.calculate((int)(Hardware.frontLeftEncoder.getPosition() * 42));
+      double right_speed = Hardware.rightFollower.calculate((int)(-Hardware.frontRightEncoder.getPosition() * 42));
+      double heading = navX.getAngle();
+      double desired_heading = -Pathfinder.r2d(Hardware.leftFollower.getHeading());
+      double heading_difference = Pathfinder.boundHalfDegrees(desired_heading + heading);
+      double turn =  0.8 * (-1.0/78.0) * heading_difference;
+      leftGroup.set(left_speed + turn);
+      rightGroup.set(-(right_speed - turn));
+    }
+
   }
 
   public double getleftEncoderPosition() {
@@ -187,24 +266,9 @@ public class Drivetrain extends Subsystem {
   }
 
   public void driveWithTarget(double throttle, double angle) {
-    
-    
     double yawSpeed = 1.4 * angle/ 30;
 
     cheesyDriveWithJoystick(-0.1, yawSpeed, false);
-    
-
-   /* double leftOutput = angle * Constants.kVisionTurnP;
-    double rightOutput = -angle * Constants.kVisionTurnP;
-
-    if(Robot.arm.isInverted)
-      throttle *= -1;
- 
-    leftOutput += throttle;
-    rightOutput += throttle;
-
-    setLeftRightMotorOutputs(Constants.kInvertedMotors * leftOutput, Constants.kInvertedMotors * (-rightOutput));
-    */
   }
 
   public double handleDeadband(double val, double deadband) {
@@ -229,28 +293,6 @@ public class Drivetrain extends Subsystem {
       }
       return value;
     };
-  }
-
-  public void updateMotionFollowing() {
-    double leftOutput =  Hardware.leftFollower.calculate((int) (-Robot.drivetrain.getleftEncoderPosition() * 42));
-    double rightOutput = Hardware.rightFollower.calculate((int) (Robot.drivetrain.getRightEncoderPosition() * 42));
-
-   /* double gyro = navX.getAngle();
-    double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(Hardware.leftFollower.getHeading()));
-    double angleDifference = -(desiredHeading - gyro);
-    double turn = 0.8 * (-1.0 / 80.0) * angleDifference;
-
-    SmartDashboard.putNumber("DESIRED HEADING", desiredHeading);
-    SmartDashboard.putNumber("ANGLE ERROR", desiredHeading - gyro);
-
-    leftOutput += turn;
-    rightOutput -= turn;
-
-    
-    setLeftRightMotorOutputs(leftOutput, -rightOutput);
-
-    */
-
   }
 
   @Override

@@ -63,6 +63,9 @@ public class Robot extends TimedRobot {
 
     CameraServer.getInstance().startAutomaticCapture();
 
+    SmartDashboard.putString("Enter path selection: ", "default");
+    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
+
   }
 
   /**
@@ -100,6 +103,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    drivetrain.navX.zeroYaw();
     Hardware.groundPivot.set(ControlMode.PercentOutput, 0.0);
   }
 
@@ -121,9 +125,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+
+    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
+
     m_autonomousCommand = m_chooser.getSelected();
 
-    
+    Hardware.frontLeftEncoder.setPosition(0);
+    Hardware.frontRightEncoder.setPosition(0);
+    Hardware.backLeftEncoder.setPosition(0);
+    Hardware.backRightEncoder.setPosition(0);
+
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;
     Hardware.armOne.setSelectedSensorPosition(0);
@@ -151,6 +162,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+
+    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
+
     Hardware.frontLeftEncoder.setPosition(0);
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.backLeftEncoder.setPosition(0);

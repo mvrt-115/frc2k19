@@ -53,6 +53,8 @@ public class OI {
   POVButton outtakeGround;
   POVButton extendRelease;
 
+  JoystickButton followPath;
+
   public OI() {
     driverJoystick = new Joystick(0);
     operatorJoystick = new Joystick(1);
@@ -69,6 +71,7 @@ public class OI {
 
     quickTurn = new JoystickButton(driverJoystick, 5);
     visionControl = new JoystickButton(driverJoystick, 6);
+    followPath = new JoystickButton(driverJoystick, 1);
 
     // hatch intake
     intakePanel = new JoystickButton(operatorJoystick, 6);
@@ -77,6 +80,7 @@ public class OI {
     intakeCargo = new JoystickTrigger(driverJoystick, 3);
     outtakeCargo = new JoystickTrigger(driverJoystick, 2);
     shootCargo = new JoystickButton(driverJoystick, 7);
+
     // ground intake
     stowIntakeGround = new POVButton(operatorJoystick, 0);
     intakeGround = new POVButton(operatorJoystick, 270);
