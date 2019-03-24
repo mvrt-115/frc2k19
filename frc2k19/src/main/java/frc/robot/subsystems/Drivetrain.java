@@ -139,6 +139,7 @@ public class Drivetrain extends Subsystem {
     wheel = handleDeadband(wheel, wheelDeadBand);
     throttle = handleDeadband(throttle, throttleDeadBand);
 
+
     double overPower;
     double angularPower;
 
@@ -186,7 +187,14 @@ public class Drivetrain extends Subsystem {
   }
 
   public void driveWithTarget(double throttle, double angle) {
-    double leftOutput = angle * Constants.kVisionTurnP;
+    
+    
+    double yawSpeed = 1.4 * angle/ 30;
+
+    cheesyDriveWithJoystick(-0.1, yawSpeed, false);
+    
+
+   /* double leftOutput = angle * Constants.kVisionTurnP;
     double rightOutput = -angle * Constants.kVisionTurnP;
 
     if(Robot.arm.isInverted)
@@ -196,6 +204,7 @@ public class Drivetrain extends Subsystem {
     rightOutput += throttle;
 
     setLeftRightMotorOutputs(Constants.kInvertedMotors * leftOutput, Constants.kInvertedMotors * (-rightOutput));
+    */
   }
 
   public double handleDeadband(double val, double deadband) {
@@ -237,8 +246,11 @@ public class Drivetrain extends Subsystem {
     leftOutput += turn;
     rightOutput -= turn;
 
-    */
+    
     setLeftRightMotorOutputs(leftOutput, -rightOutput);
+
+    */
+
   }
 
   @Override

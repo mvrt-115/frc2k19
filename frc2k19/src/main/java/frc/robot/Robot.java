@@ -123,6 +123,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_chooser.getSelected();
 
+    
+    arm.currState = ArmState.ZEROED;
+    arm.setpoint = 0;
+    Hardware.armOne.setSelectedSensorPosition(0);
+    
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
      * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -158,12 +163,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
-    }
-
-    arm.currState = ArmState.ZEROED;
-    arm.setpoint = 0;
-    Hardware.armOne.setSelectedSensorPosition(0);
-    
+    }    
   }
 
   /**

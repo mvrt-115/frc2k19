@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -119,6 +120,11 @@ public class Arm extends Subsystem {
       Robot.drivetrain.switchPipeline(0);
     }
 
+    if(setpoint !=0 && setpoint !=Constants.kZero  && setpoint != 1500){
+      Hardware.activeRelease.set(Value.kReverse);  
+      Hardware.claw.set(Value.kForward);    
+    }
+
     switch (currState) {
     case ZEROING:
       SmartDashboard.putString("Arm State", "zeroing");
@@ -127,7 +133,6 @@ public class Arm extends Subsystem {
         updateState(ArmState.ZEROED);
         Hardware.armOne.setSelectedSensorPosition(0);
       } else if (getArmEncoderValue() < Constants.kBottomTolerance) {
-         SmartDashboard.putNumber("TEST", 12);
      //    Hardware.armOne.set(ControlMode.PercentOutput, 0.038);
           stop();
       } else {

@@ -38,7 +38,7 @@ public class Constants {
 
 	public static final int kMaxCruiseVelocity = 15000;
 
-	public static final int kZero = 2600;  
+	public static final int kZero = 2300;  
 
 	public static final int kCargoShipFront = 4000;
 	public static final int kCargoShipBack = 12500;
@@ -46,7 +46,7 @@ public class Constants {
 	public static final int kCargoIntakeLevel = 20500;
 
 	public static final int kStowIntake = 0;
-	public static final int kDeployIntake = 400;
+	public static final int kDeployIntake = 500;
 	public static final int kExtendIntake = 1550; 
 
 	public static final int kDriveFrontLeft = 4;  //4 5
