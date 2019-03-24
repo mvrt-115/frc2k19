@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -117,6 +118,11 @@ public class Arm extends Subsystem {
     if (isInverted && getArmEncoderValue() < Constants.kMidEncoderValue) {
       isInverted = false;
       Robot.drivetrain.switchPipeline(0);
+    }
+
+    if(setpoint !=0 && setpoint !=Constants.kZero  && setpoint != 1500){
+      Hardware.activeRelease.set(Value.kReverse);  
+      Hardware.claw.set(Value.kForward);    
     }
 
     switch (currState) {
