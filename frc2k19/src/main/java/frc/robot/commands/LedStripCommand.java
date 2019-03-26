@@ -17,7 +17,7 @@ public class LedStripCommand extends Command
 {
   public LedStripCommand() 
   {
-    requires(Robot.ledStrip);
+
   }
 
   // Called just before this Command runs the first time
@@ -39,7 +39,7 @@ public class LedStripCommand extends Command
   @Override
   protected boolean isFinished() 
   {
-    return !Robot.oi.getOuttakeCargo() || !Robot.oi.getIntakeCargo();
+    return !Robot.oi.getOuttakeCargo() && !Robot.oi.getIntakeCargo();
   }
 
   // Called once after isFinished returns true
