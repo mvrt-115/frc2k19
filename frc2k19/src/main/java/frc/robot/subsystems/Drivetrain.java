@@ -28,6 +28,8 @@ import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.commands.DriveWithJoystick;
+import frc.robot.util.Limelight;
+import frc.robot.util.RollingAverage;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.Trajectory;
@@ -35,10 +37,6 @@ import jaci.pathfinder.followers.EncoderFollower;
 
 public class Drivetrain extends Subsystem {
 
-  NetworkTable table;
-  NetworkTableEntry tx;
-  NetworkTableEntry ty;
-  NetworkTableEntry ta;
 
   private int k_ticks_per_rev = 42 * 9;
   private double k_wheel_diameter = 0.56;
@@ -52,9 +50,8 @@ public class Drivetrain extends Subsystem {
   private double wheelDeadBand = 0.03;
   private double throttleDeadBand = 0.02;
 
-  public double xAngle;
-  public double yAngle;
-
+  public Limelight limelight = new Limelight();
+  private RollingAverage limelightAngle = new RollingAverage(5);
   private SpeedControllerGroup leftGroup, rightGroup;
 
   private static final double SENSITIVITY = 0.90;
@@ -73,6 +70,16 @@ public class Drivetrain extends Subsystem {
     Hardware.leftFollower = new EncoderFollower();
     Hardware.rightFollower = new EncoderFollower();
 
+    Hardware.frontLeft.setOpenLoopRampRate(0.3);
+    Hardware.frontRight.setOpenLoopRampRate(0.3);
+    Hardware.backLeft.setOpenLoopRampRate(0.3);
+    Hardware.backRight.setOpenLoopRampRate(0.3);
+
+    Hardware.frontLeft.setSmartCurrentLimit(40, 40);
+    Hardware.frontRight.setSmartCurrentLimit(40, 40);
+    Hardware.backLeft.setSmartCurrentLimit(40, 40);
+    Hardware.backRight.setSmartCurrentLimit(40, 40);
+
     Hardware.frontLeftEncoder.setPosition(0);
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.backLeftEncoder.setPosition(0);
@@ -81,11 +88,7 @@ public class Drivetrain extends Subsystem {
     leftGroup = new SpeedControllerGroup(Hardware.frontLeft,Hardware.backLeft);
     rightGroup = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
 
-    table = NetworkTableInstance.getDefault().getTable("limelight");
-    tx = table.getEntry("tx");
-    ty = table.getEntry("ty");
-    ta = table.getEntry("ta");
-
+    
     navX = new AHRS(SPI.Port.kMXP);
     navX.zeroYaw();
 
@@ -157,57 +160,13 @@ public class Drivetrain extends Subsystem {
 
   }
 
-  public double getAngle() {
-    return tx.getDouble(0);
-  }
 
   public double getYaw() {
     return navX.getYaw();
   }
 
-  public double getYDistance() {
-    Number[] empty = { 0, 0, 0, 0, 0, 0 };
-    Number newArray[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camtran")
-        .getNumberArray(empty);
-
-    return (double) newArray[2];
-  }
-
-  public double getXDistance() {
-    Number[] empty = { 0, 0, 0, 0, 0, 0 };
-    Number newArray[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camtran")
-        .getNumberArray(empty);
-
-    return (double) newArray[1];
-  }
-
-  public double getFinalAngle(){
-    Number[] empty = { 0, 0, 0, 0, 0, 0 };
-    Number newArray[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camtran").getNumberArray(empty);
-    return (double) newArray[5];
-  }
-
-  public void switchPipeline(int number) {
-
-    if(number == 3 || number == 4)
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
-    else
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
-  
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(number);
-  }
-
-
-  public void setLEDMode(int number) {
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(number);
-
-  }
-
-  public void curvatureDrive(double speed, double wheel, boolean quickTurn) {
-    //drive.curvatureDrive(speed, wheel, quickTurn);
-  }
-
   public void setLeftRightMotorOutputs(double left, double right) {
+
     Hardware.frontLeft.set(left);
     Hardware.backLeft.set(left);
     Hardware.frontRight.set(right);
@@ -262,13 +221,30 @@ public class Drivetrain extends Subsystem {
       leftPwm += overPower * (-1.0 - rightPwm);
       rightPwm = -1.0;
     }
+
+    SmartDashboard.putNumber("TEST", leftPwm);
     setLeftRightMotorOutputs(Constants.kInvertedMotors * leftPwm, Constants.kInvertedMotors * (-rightPwm));
   }
 
   public void driveWithTarget(double throttle, double angle) {
-    double yawSpeed = 1.4 * angle/ 30;
+    double yawSpeed = 1.25 * angle/ 30; 
 
-    cheesyDriveWithJoystick(-0.1, yawSpeed, false);
+    cheesyDriveWithJoystick(-0.2, yawSpeed, false);
+  }
+
+  public void driveWithTargetNew(){
+    if(limelight.hasTarget()){
+      double angle = limelight.getAngle();
+      double area = limelight.getArea();
+      
+      limelightAngle.add(angle);
+
+      double throttle = -Constants.kVisionThrottleP * (Constants.kMaxArea - area);
+      double wheel = Constants.kVisionWheelP * (limelightAngle.getAverage());
+      
+      cheesyDriveWithJoystick(throttle, wheel, false);
+    }  
+
   }
 
   public double handleDeadband(double val, double deadband) {
@@ -280,7 +256,8 @@ public class Drivetrain extends Subsystem {
     return Math.sin(factor * wheel) / Math.sin(factor);
   }
 
-  private DoubleFunction<Double> limiter(double minimum, double maximum) {
+  private DoubleFunction<Double> limiter(
+    double minimum, double maximum) {
     if (maximum < minimum) {
       throw new IllegalArgumentException("The minimum value cannot exceed the maximum value");
     }

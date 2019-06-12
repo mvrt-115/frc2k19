@@ -7,28 +7,27 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Hardware;
 import frc.robot.Robot;
+import frc.robot.commands.FlashLimelight;
 
-/**
- * Add your docs here.
- */
 
 public class PanelIntake extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+
+  DigitalInput limitSwitch;
+
 
   public PanelIntake() {
     Hardware.claw = new DoubleSolenoid(1, 1, 0);
     Hardware.activeRelease = new DoubleSolenoid(1, 3, 2);
-
+    limitSwitch = new DigitalInput(4);
   }
 
-  public void extendIntake() {
+  public void intakePanel() {
 
     if (Hardware.activeRelease.get() == Value.kReverse){
       Hardware.claw.set(Value.kReverse);
@@ -37,15 +36,14 @@ public class PanelIntake extends Subsystem {
     else if (Hardware.claw.get() == Value.kReverse){
       Hardware.claw.set(Value.kForward);
       Robot.arm.setArmSetpoint(1500);
-    //  Timer.delay(0.5);
-      
+      new FlashLimelight().start();      
     }else{
       Hardware.activeRelease.set(Value.kReverse);
       Robot.arm.setArmSetpoint(0);
     }
   }
 
-  public void retractIntake(int state) {
+  public void outtakePanel(int state) {
 
     if(state ==1) 
        Hardware.activeRelease.set(Value.kForward);
@@ -57,7 +55,14 @@ public class PanelIntake extends Subsystem {
       Hardware.claw.set(Value.kForward);
    }
 
-  @Override
-  public void initDefaultCommand() {
-  }
+   public void loop(){
+      if(Hardware.claw.get() == Value.kReverse && limitSwitch.get()){
+    //    Hardware.claw.set(Value.kForward);
+     //   Robot.arm.setArmSetpoint(1500);
+      //  new FlashLimelight().start();    
+      }
+
+   }
+
+   public void initDefaultCommand() {}
 }

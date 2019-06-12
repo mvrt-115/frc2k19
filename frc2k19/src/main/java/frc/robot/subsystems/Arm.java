@@ -14,27 +14,28 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
+import frc.robot.util.Limelight.PIPELINE_STATE;
 
 /**
  * Add your docs here.
  */
 public class Arm extends Subsystem {
 
+  
   public enum ArmState {
     ZEROED, ZEROING, SETPOINT, HOLD, MANUAL
   };
 
+  public boolean firstTime;
   public double setpoint;
   public boolean isInverted;
   public DigitalInput hallEffect1;
-  public DigitalInput hallEffect2;
 
   public ArmState currState = ArmState.ZEROED;
 
@@ -50,7 +51,6 @@ public class Arm extends Subsystem {
     Hardware.armFour = new TalonSRX(Constants.kArmFour);
 
     hallEffect1 = new DigitalInput(0);
-    hallEffect2 = new DigitalInput(1);
 
     Hardware.armTwo.follow(Hardware.armOne);
     Hardware.armThree.follow(Hardware.armOne);
@@ -97,6 +97,7 @@ public class Arm extends Subsystem {
 
     Hardware.armOne.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 
+    firstTime = true;
     new Notifier(new Runnable() {
 
       public void run() {
@@ -112,18 +113,19 @@ public class Arm extends Subsystem {
 
     if (!isInverted && getArmEncoderValue() > Constants.kMidEncoderValue) {
       isInverted = true;
-      Robot.drivetrain.switchPipeline(1);
+   //   Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.BACK_DRIVER);
     }
 
     if (isInverted && getArmEncoderValue() < Constants.kMidEncoderValue) {
       isInverted = false;
-      Robot.drivetrain.switchPipeline(0);
-    }
-
+    //  Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.FRONT_DRIVER);    }
+    } 
+    
     if(setpoint !=0 && setpoint !=Constants.kZero  && setpoint != 1500){
       Hardware.activeRelease.set(Value.kReverse);  
       Hardware.claw.set(Value.kForward);    
     }
+    
 
     switch (currState) {
     case ZEROING:
@@ -148,6 +150,8 @@ public class Arm extends Subsystem {
           SmartDashboard.putString("Arm State", "setpoint");
           Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
         }
+
+    
       }
       else{
         SmartDashboard.putString("Arm State", "setpoint");
@@ -163,6 +167,12 @@ public class Arm extends Subsystem {
       // hold();
       break;
     case MANUAL:
+
+      if(!hallEffect1.get()){
+        Hardware.armOne.setSelectedSensorPosition(0);
+        firstTime = false;
+      }
+
       SmartDashboard.putString("Arm State", "manual");
       manualControl(0.5 * Robot.oi.getArmThrottle());
       break;
@@ -201,5 +211,13 @@ public class Arm extends Subsystem {
   }
 
   public void initDefaultCommand() {
+  }
+
+
+  public void log(){
+    SmartDashboard.putNumber("Arm Encoder Value", getArmEncoderValue());
+    SmartDashboard.putBoolean("ZERO Limit Switch", hallEffect1.get());
+    SmartDashboard.putNumber("Arm Output", Hardware.armOne.getMotorOutputPercent());
+
   }
 }

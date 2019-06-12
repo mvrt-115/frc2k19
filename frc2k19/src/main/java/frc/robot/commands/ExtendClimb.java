@@ -6,31 +6,36 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.commands;
-
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.util.Limelight.LED_MODE;
 
-public class FlashLimelight extends Command {
-  public FlashLimelight() {}
+public class ExtendClimb extends Command {
+  
+  int stage;
+  public ExtendClimb() {
+    stage = 0;
+   }
 
-  protected void initialize() {
-    setTimeout(.3);
+   protected void initialize() {
+    Robot.climber.climb();
+    stage = 0;
+    setTimeout(1);
   }
 
   protected void execute() {
-    Robot.drivetrain.limelight.setLED(LED_MODE.BLINKING);
+    if(isTimedOut()){
+       Robot.climber.push();
+    //   Robot.climber.driveWheels();
+    }
   }
 
   protected boolean isFinished() {
-    if(isTimedOut())
-      return true;
-    return false;
+    return !Robot.oi.getExtendClimb();
   }
 
   protected void end() {
-    Robot.drivetrain.limelight.setLED(LED_MODE.OFF);
+    Robot.climber.stopWheels();
+    Robot.climber.retract();
   }
 
   protected void interrupted() {}

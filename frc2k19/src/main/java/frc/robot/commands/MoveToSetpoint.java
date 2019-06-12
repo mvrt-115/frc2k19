@@ -20,6 +20,19 @@ public class MoveToSetpoint extends InstantCommand {
   }
 
   protected void initialize() {
+    
+    if(setpointTickValue == Constants.kCargoIntakeLevel){
+      new  IntakeCargo().start();
+    }
+
+
+    if(setpointTickValue == Constants.kCargoShipFront)
+    {
+      Robot.climber.cargoShot();
+    }else if(setpointTickValue == Constants.kZero)
+      Robot.climber.retract();
+    
+    
     if(setpointTickValue == Constants.kZero){
       Robot.arm.zeroArm();
     }
@@ -30,7 +43,9 @@ public class MoveToSetpoint extends InstantCommand {
 
   protected void execute() {}
 
-  protected void end() {}
+  protected void end() {
+
+  }
 
   protected void interrupted() {
     end();

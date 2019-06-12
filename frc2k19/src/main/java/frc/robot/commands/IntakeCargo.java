@@ -12,37 +12,49 @@ import frc.robot.Robot;
 
 public class IntakeCargo extends Command {
 
+  public enum CargoState {
+    MANUAL, AUTO
+  };
+
+  public CargoState currState;  
+
   public IntakeCargo() {
-
+    currState = CargoState.AUTO;
   }
 
-  // Called just before this Command runs the first time
-  @Override
   protected void initialize() {
+    currState = CargoState.AUTO;
+
+    if(Robot.oi.getIntakeCargo())
+      currState = CargoState.MANUAL;
+    else {
+      setTimeout(1.2);
+    }  
   }
 
-  // Called repeatedly when this Command is scheduled to run
-  @Override
   protected void execute() {
-    Robot.cargoIntake.intakeCargo();
 
+    if(Robot.oi.getIntakeCargo()){
+      currState = CargoState.MANUAL;
+      Robot.cargoIntake.intakeCargo();
+    }else {
+      if(isTimedOut())
+        Robot.cargoIntake.intakeCargo();
+    }
   }
 
-  // Make this return true when this Command no longer needs to run execute()
-  @Override
   protected boolean isFinished() {
-    return !Robot.oi.getIntakeCargo();
+    if(currState == CargoState.MANUAL)
+      return !Robot.oi.getIntakeCargo();
+    else if(currState == CargoState.AUTO)
+      return !Robot.cargoIntake.getBreakBeam();
+
+    return false;
   }
 
-  // Called once after isFinished returns true
-  @Override
   protected void end() {
     Robot.cargoIntake.stop();
   }
 
-  // Called when another command which requires one or more of the same
-  // subsystems is scheduled to run
-  @Override
-  protected void interrupted() {
-  }
+  protected void interrupted() {}
 }

@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
@@ -24,7 +25,7 @@ public class CargoIntake extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  public DigitalInput breakbeam;
+  private DigitalInput breakbeam;
 
   public CargoIntake() {
     Hardware.cargoIntakeTop = new TalonSRX(Constants.kCargoIntakeTop);
@@ -33,7 +34,7 @@ public class CargoIntake extends Subsystem {
     Hardware.cargoIntakeTop.setNeutralMode(NeutralMode.Brake);
     Hardware.cargoIntakeBottom.setNeutralMode(NeutralMode.Brake);
     
-    breakbeam = new DigitalInput(2);
+    breakbeam = new DigitalInput(3);
   } 
 
   public void intakeCargo() {
@@ -47,8 +48,8 @@ public class CargoIntake extends Subsystem {
       Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.77);
       Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors *-0.77);
     }else if(Robot.arm.setpoint == Constants.kCargoShipFront){
-      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.5);
-      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.5);
+      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.5); // -0.6 for climbers
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.5); // 0.6 for climbers
     } else if(Robot.arm.setpoint == Constants.kCargoShipBack){
        Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.4);
         Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.4); 
@@ -76,7 +77,16 @@ public class CargoIntake extends Subsystem {
     Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0);
   }
 
+  public void log(){
+    SmartDashboard.putBoolean("Cargo BreakBeam", getBreakBeam());
+
+  }
+
   @Override
   public void initDefaultCommand() {
+  }
+
+  public boolean getBreakBeam(){
+    return breakbeam.get();
   }
 }
