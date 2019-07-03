@@ -20,32 +20,19 @@ public class DriveWithJoystick extends Command {
      requires(Robot.drivetrain);
   }
 
-  protected void initialize() {}
-
-
-  protected void execute() {
-    if(Robot.oi.getVisionTurn()) {
-      
-      if(Robot.arm.isInverted)
-        Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.BACK_VISION);
-      else
-        Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.FRONT_VISION);
-  
-      Robot.drivetrain.limelight.setLED(LED_MODE.ON);
-      double angle = Robot.drivetrain.limelight.getAngle();
-      Robot.drivetrain.driveWithTarget(Robot.oi.getThrottle(), angle);
-    }
-    else {
-      Robot.drivetrain.cheesyDriveWithJoystick(0.8 *Robot.oi.getThrottle(), 0.6 * Robot.oi.getWheel(), Robot.oi.getQuickTurn());   
+  protected void initialize() {
       Robot.drivetrain.limelight.setLED(LED_MODE.OFF);  
       
       if(Robot.arm.isInverted)
         Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.BACK_DRIVER);
       else
        Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.FRONT_DRIVER);
-    }
   }
 
+
+  protected void execute() {
+      Robot.drivetrain.cheesyDriveWithJoystick(0.8 *Robot.oi.getThrottle(), 0.6 * Robot.oi.getWheel(), Robot.oi.getQuickTurn());   
+  }
   
   protected boolean isFinished() {
      return false;

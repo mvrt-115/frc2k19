@@ -10,8 +10,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
+import frc.robot.commands.AutoAlign;
+import frc.robot.commands.DriveToTarget;
 import frc.robot.commands.ExtendClimb;
 import frc.robot.commands.ExtendRelease;
+import frc.robot.commands.FollowPath;
 import frc.robot.commands.IntakeCargo;
 //import frc.robot.commands.IntakeHatchGround;
 import frc.robot.commands.IntakePanel;
@@ -76,7 +79,7 @@ public class OI {
     // drive
     quickTurn = new JoystickButton(driverJoystick, 5);
     visionControl = new JoystickButton(driverJoystick, 6);
-   // followPath = new JoystickButton(driverJoystick, 1);
+    followPath = new JoystickButton(driverJoystick, 1);
 
     //climb
     extendClimb = new JoystickButton(driverJoystick, 3);
@@ -111,6 +114,10 @@ public class OI {
     extendRelease.whenPressed(new ExtendRelease());
 
     extendClimb.whenPressed(new ExtendClimb());
+  
+    visionControl.whenPressed(new AutoAlign());
+
+    followPath.whenPressed(new DriveToTarget("TestStraight", "TestCurve", ".", Robot.autonStage));
   }
 
   

@@ -121,7 +121,7 @@ public class Arm extends Subsystem {
     //  Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.FRONT_DRIVER);    }
     } 
     
-    if(setpoint !=0 && setpoint !=Constants.kZero  && setpoint != 1500){
+    if(setpoint !=0 && setpoint !=Constants.kZero  && setpoint != Constants.kCargoIntakeLevel){
       Hardware.activeRelease.set(Value.kReverse);  
       Hardware.claw.set(Value.kForward);    
     }

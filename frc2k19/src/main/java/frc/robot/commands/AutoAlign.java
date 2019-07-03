@@ -8,50 +8,52 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Hardware;
 import frc.robot.Robot;
+import frc.robot.util.Limelight.LED_MODE;
+import frc.robot.util.Limelight.PIPELINE_STATE;
 
-public class FollowPath extends Command {
-  
-  private String path;
-  
-  public FollowPath(String path) {
-    this.path = path;
+public class AutoAlign extends Command {
+  public AutoAlign() {
+    requires(Robot.drivetrain);
+    // Use requires() here to declare subsystem dependencies
+    // eg. requires(chassis);
   }
 
   // Called just before this Command runs the first time
   @Override
-  protected void initialize() {
-    Robot.drivetrain.initializePathFollower(path);
+  protected void initialize() { 
+    if(Robot.arm.isInverted)
+      Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.BACK_VISION);
+    else
+      Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.FRONT_VISION);
+
+    Robot.drivetrain.limelight.setLED(LED_MODE.ON);
+    
+
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-        Robot.drivetrain.followPath();
+    double angle = Robot.drivetrain.limelight.getAngle();
+    Robot.drivetrain.driveWithTarget(Robot.oi.getThrottle(), angle);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Hardware.leftFollower.isFinished() || Hardware.rightFollower.isFinished();
+    return !Robot.oi.getVisionTurn();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.drivetrain.setLeftRightMotorOutputs(0, 0);
-    Hardware.backRightEncoder.setPosition(0);
-    Hardware.backLeftEncoder.setPosition(0);
-    Hardware.frontRightEncoder.setPosition(0);
-    Hardware.frontLeftEncoder.setPosition(0);
-    new FlashLimelight().start();
+    new DriveWithJoystick().start();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    end();
   }
 }

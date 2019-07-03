@@ -9,10 +9,12 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -28,6 +30,7 @@ import frc.robot.subsystems.PanelIntake;
 
 
 public class Robot extends TimedRobot {
+
   public static Drivetrain drivetrain;
   public static Arm arm;
   public static OI oi;
@@ -37,17 +40,34 @@ public class Robot extends TimedRobot {
   public static Climber climber;
   public static Compressor c;
 
+  public static RobotState currState;
+  public static RobotStartLocation startLocation;
+  public static AutonGoal goal;
+  public static int autonStage;
+
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
+  public enum RobotState {
+    DISABLED, TELEOP, AUTON
+  };
+
+  public enum RobotStartLocation {
+    CENTER, LEFT_BOTTOM, LEFT_TOP, RIGHT_BOTTOM, RIGHT_TOP
+  };
+
+
+  public enum AutonGoal {
+    CENTER, LEFT_CARGOSHIP, RIGHT_CARGOSHIP, ROCKET
+  };
+
   public void robotInit() {
-    oi = new OI(); 
     drivetrain = new Drivetrain();
     arm = new Arm();
     cargoIntake = new CargoIntake();
     panelIntake = new PanelIntake();
-    //groundIntake = new GroundIntake();
     climber = new Climber();
+    oi = new OI(); 
 
     Hardware.armOne.setNeutralMode(NeutralMode.Coast);
     Hardware.armTwo.setNeutralMode(NeutralMode.Coast);
@@ -62,8 +82,10 @@ public class Robot extends TimedRobot {
 
 
     SmartDashboard.putString("Enter path selection: ", "default");
-    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
+   // drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
 
+    currState = RobotState.DISABLED;
+    autonStage =1;
   }
 
   @Override
@@ -71,15 +93,26 @@ public class Robot extends TimedRobot {
     cargoIntake.log();
     arm.log();
     
-    SmartDashboard.putNumber("Throttle", Robot.oi.getThrottle());
-    SmartDashboard.putNumber("Throttle 2", Robot.oi.getWheel());
-    SmartDashboard.putNumber("Drivetrain Encoder", drivetrain.getleftEncoderPosition());    
-    SmartDashboard.putNumber("Climber Encoder", Hardware.rightClimb.getSelectedSensorPosition());
+    SmartDashboard.putNumber("NavX", Robot.drivetrain.getYaw());
+    SmartDashboard.putString("Possible Start Locations", "Left, Center, Right");
+    SmartDashboard.putString("Possible Start Height", "Low, High");
+    SmartDashboard.putString("Possible Auton Goal", "Center, Left, Right, Rocket");
+    SmartDashboard.putNumber("Drivetrain Left Encoder", drivetrain.getleftEncoderPosition());
+    SmartDashboard.putNumber("Drivetrain Right", drivetrain.getRightEncoderPosition());    
+ //   SmartDashboard.putNumber("Climber Encoder", Hardware.rightClimb.getSelectedSensorPosition());
+    SmartDashboard.putBoolean("Hatch Detected", panelIntake.limitSwitch.get());
+      
+  
   }
 
  
   public void disabledInit() {
-    drivetrain.navX.zeroYaw();
+    currState = RobotState.DISABLED;
+    Hardware.frontLeft.setIdleMode(IdleMode.kCoast);
+		Hardware.backLeft.setIdleMode(IdleMode.kCoast);
+		Hardware.frontRight.setIdleMode(IdleMode.kCoast);
+    Hardware.backRight.setIdleMode(IdleMode.kCoast);
+    
     //Hardware.groundPivot.set(ControlMode.PercentOutput, 0.0);
   }
 
@@ -90,9 +123,20 @@ public class Robot extends TimedRobot {
 
  
   public void autonomousInit() {
+    currState = RobotState.AUTON;
 
-    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
+    
+    String location = SmartDashboard.getString("Start Location", "default");
+    String autonGoal = SmartDashboard.getString("AutonGoal", "default");
+    String height = SmartDashboard.getString("Height:", "default");
 
+
+
+
+
+    //    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
+
+    drivetrain.navX.zeroYaw();
     m_autonomousCommand = m_chooser.getSelected();
 
     Hardware.frontLeftEncoder.setPosition(0);
@@ -115,10 +159,13 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
   }
 
-  public void teleopInit() {}
+  public void teleopInit() {
+    currState = RobotState.TELEOP;
+  }
 
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+
   }
 
   public void testPeriodic() {}

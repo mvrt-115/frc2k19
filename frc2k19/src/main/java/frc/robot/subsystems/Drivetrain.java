@@ -41,7 +41,6 @@ public class Drivetrain extends Subsystem {
   private int k_ticks_per_rev = 42 * 9;
   private double k_wheel_diameter = 0.56;
   private double k_max_velocity = 17.5;
-  public String k_path_name = "";
 
   public AHRS navX;
   private Notifier notifier;
@@ -97,11 +96,14 @@ public class Drivetrain extends Subsystem {
 		Hardware.frontRight.setIdleMode(IdleMode.kCoast);
     Hardware.backRight.setIdleMode(IdleMode.kCoast);
 
+    Hardware.frontRight.setInverted(true);
+    Hardware.backRight.setInverted(true); 
+
     
 
   }
 
-  public void initializePathFollower() {
+  public void initializePathFollower(String k_path_name) {
 
     navX.zeroYaw();
 
@@ -139,14 +141,16 @@ public class Drivetrain extends Subsystem {
     else {
       SmartDashboard.putBoolean("start", true);
 
-      double left_speed = Hardware.leftFollower.calculate((int)(Hardware.frontLeftEncoder.getPosition() * 42));
-      double right_speed = Hardware.rightFollower.calculate((int)(-Hardware.frontRightEncoder.getPosition() * 42));
+      double left_speed = Hardware.leftFollower.calculate((int)(getleftEncoderPosition() * 42));
+      double right_speed = Hardware.rightFollower.calculate((int)(getRightEncoderPosition() * 42));
       double heading = navX.getAngle();
       double desired_heading = -Pathfinder.r2d(Hardware.leftFollower.getHeading());
       double heading_difference = Pathfinder.boundHalfDegrees(desired_heading + heading);
-      double turn =  0.8 * (-1.0/78.0) * heading_difference;
-      leftGroup.set(left_speed + turn);
-      rightGroup.set(-(right_speed - turn));
+      double turn =  -0.8 * (1.0/78.0) * heading_difference;
+      //double turn = 0;
+      setLeftRightMotorOutputs(left_speed + turn, (right_speed - turn));
+     // leftGroup.set(left_speed + turn);
+     // rightGroup.set(-1 * (right_speed - turn));
     }
 
   }
@@ -157,7 +161,7 @@ public class Drivetrain extends Subsystem {
 
   public double getRightEncoderPosition() {
     return (Hardware.frontRightEncoder.getPosition() + Hardware.backRightEncoder.getPosition()) / 2;
-
+    //return Hardware.frontRightEncoder.getPosition();
   }
 
 
@@ -223,7 +227,7 @@ public class Drivetrain extends Subsystem {
     }
 
     SmartDashboard.putNumber("TEST", leftPwm);
-    setLeftRightMotorOutputs(Constants.kInvertedMotors * leftPwm, Constants.kInvertedMotors * (-rightPwm));
+    setLeftRightMotorOutputs(Constants.kInvertedMotors * leftPwm, Constants.kInvertedMotors * (rightPwm));
   }
 
   public void driveWithTarget(double throttle, double angle) {

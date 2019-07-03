@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.commands.FlashLimelight;
@@ -18,7 +19,7 @@ import frc.robot.commands.FlashLimelight;
 
 public class PanelIntake extends Subsystem {
 
-  DigitalInput limitSwitch;
+  public DigitalInput limitSwitch;
 
 
   public PanelIntake() {
@@ -35,11 +36,15 @@ public class PanelIntake extends Subsystem {
     }
     else if (Hardware.claw.get() == Value.kReverse){
       Hardware.claw.set(Value.kForward);
-      Robot.arm.setArmSetpoint(1500);
+      
+      if(Robot.arm.setpoint != Constants.kCargoIntakeLevel)
+        Robot.arm.setArmSetpoint(1500);
       new FlashLimelight().start();      
     }else{
       Hardware.activeRelease.set(Value.kReverse);
-      Robot.arm.setArmSetpoint(0);
+
+      if(Robot.arm.setpoint != 1500)
+        Robot.arm.setArmSetpoint(0);
     }
   }
 
