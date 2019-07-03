@@ -16,11 +16,14 @@ public class DriveToTarget extends CommandGroup {
    */
   public DriveToTarget(String path1, String path2, String path3, int stage) {
     
-  //  if(stage ==1){
+
+    addSequential(new FollowPath(path2));
+
+  /*  if(stage ==1){
       addSequential(new FollowPath(path2));
-  //  }
+    }
     
-  /*  if(stage ==2){
+    if(stage ==2){
       addSequential(new FollowPath(path2));
     }
 
@@ -45,6 +48,6 @@ public class DriveToTarget extends CommandGroup {
     // a CommandGroup containing them would require both the chassis and the
     // arm.
 
-    Robot.autonStage++;
+   // Robot.autonStage++;
   }
 }

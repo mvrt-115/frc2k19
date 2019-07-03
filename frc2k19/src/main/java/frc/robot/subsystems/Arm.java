@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
-import frc.robot.util.Limelight.PIPELINE_STATE;
 
 /**
  * Add your docs here.

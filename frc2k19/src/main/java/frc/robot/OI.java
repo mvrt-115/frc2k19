@@ -11,21 +11,17 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
 import frc.robot.commands.AutoAlign;
+import frc.robot.commands.AutonRoutine;
 import frc.robot.commands.DriveToTarget;
 import frc.robot.commands.ExtendClimb;
 import frc.robot.commands.ExtendRelease;
-import frc.robot.commands.FollowPath;
 import frc.robot.commands.IntakeCargo;
-//import frc.robot.commands.IntakeHatchGround;
 import frc.robot.commands.IntakePanel;
 import frc.robot.commands.ManualControl;
 import frc.robot.commands.MoveToSetpoint;
 import frc.robot.commands.OuttakeCargo;
-//import frc.robot.commands.OuttakeHatchGround;
 import frc.robot.commands.OuttakePanel;
-//import frc.robot.commands.RetractClimb;
 import frc.robot.commands.ShootCargo;
-//import frc.robot.commands.StowGroundIntake;
 import frc.robot.util.JoystickTrigger;
 
 /**
@@ -82,7 +78,7 @@ public class OI {
     followPath = new JoystickButton(driverJoystick, 1);
 
     //climb
-    extendClimb = new JoystickButton(driverJoystick, 3);
+  //  extendClimb = new JoystickButton(driverJoystick, 3);
     //retractClimb = new JoystickButton(driverJoystick, 2);  
 
     // hatch intake
@@ -118,6 +114,7 @@ public class OI {
     visionControl.whenPressed(new AutoAlign());
 
     followPath.whenPressed(new DriveToTarget("TestStraight", "TestCurve", ".", Robot.autonStage));
+  //  followPath.whenPressed(new AutonRoutine(Robot.startLocation, Robot.goal, Robot.autonStage));
   }
 
   

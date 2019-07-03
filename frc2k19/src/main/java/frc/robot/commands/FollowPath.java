@@ -10,12 +10,14 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Hardware;
 import frc.robot.Robot;
+import frc.robot.util.Limelight.LED_MODE;
 
 public class FollowPath extends Command {
   
   private String path;
   
   public FollowPath(String path) {
+    requires(Robot.drivetrain);
     this.path = path;
   }
 
@@ -46,6 +48,7 @@ public class FollowPath extends Command {
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.frontLeftEncoder.setPosition(0);
     new FlashLimelight().start();
+    new DriveWithJoystick().start();
   }
 
   // Called when another command which requires one or more of the same

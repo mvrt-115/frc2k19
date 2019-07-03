@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
@@ -70,4 +71,9 @@ public class PanelIntake extends Subsystem {
    }
 
    public void initDefaultCommand() {}
+
+
+   public void log(){
+    SmartDashboard.putBoolean("Hatch Detected", limitSwitch.get());
+   }
 }

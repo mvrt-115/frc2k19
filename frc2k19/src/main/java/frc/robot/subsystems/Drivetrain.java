@@ -6,8 +6,6 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
-
-import java.io.IOException;
 import java.util.function.DoubleFunction;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -16,17 +14,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
-import frc.robot.Robot;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.util.Limelight;
 import frc.robot.util.RollingAverage;
@@ -39,7 +32,7 @@ public class Drivetrain extends Subsystem {
 
 
   private int k_ticks_per_rev = 42 * 9;
-  private double k_wheel_diameter = 0.56;
+  private double k_wheel_diameter = 0.1524;   //0.56
   private double k_max_velocity = 17.5;
 
   public AHRS navX;
@@ -51,7 +44,6 @@ public class Drivetrain extends Subsystem {
 
   public Limelight limelight = new Limelight();
   private RollingAverage limelightAngle = new RollingAverage(5);
-  private SpeedControllerGroup leftGroup, rightGroup;
 
   private static final double SENSITIVITY = 0.90;
   private DoubleFunction<Double> limiter = limiter(-0.9, 0.9);
@@ -74,18 +66,15 @@ public class Drivetrain extends Subsystem {
     Hardware.backLeft.setOpenLoopRampRate(0.3);
     Hardware.backRight.setOpenLoopRampRate(0.3);
 
-    Hardware.frontLeft.setSmartCurrentLimit(40, 40);
-    Hardware.frontRight.setSmartCurrentLimit(40, 40);
-    Hardware.backLeft.setSmartCurrentLimit(40, 40);
-    Hardware.backRight.setSmartCurrentLimit(40, 40);
+    Hardware.frontLeft.setSmartCurrentLimit(40, 45);
+    Hardware.frontRight.setSmartCurrentLimit(40, 45);
+    Hardware.backLeft.setSmartCurrentLimit(40, 45);
+    Hardware.backRight.setSmartCurrentLimit(40, 45);
 
     Hardware.frontLeftEncoder.setPosition(0);
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.backLeftEncoder.setPosition(0);
     Hardware.backRightEncoder.setPosition(0);
-
-    leftGroup = new SpeedControllerGroup(Hardware.frontLeft,Hardware.backLeft);
-    rightGroup = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
 
     
     navX = new AHRS(SPI.Port.kMXP);
@@ -98,8 +87,6 @@ public class Drivetrain extends Subsystem {
 
     Hardware.frontRight.setInverted(true);
     Hardware.backRight.setInverted(true); 
-
-    
 
   }
 
@@ -129,13 +116,38 @@ public class Drivetrain extends Subsystem {
 
   }
 
+
+  public void initializePathFollowerReverse(String k_path_name){
+    navX.zeroYaw();
+
+    Hardware.frontLeft.setIdleMode(IdleMode.kBrake);
+		Hardware.backLeft.setIdleMode(IdleMode.kBrake);
+		Hardware.frontRight.setIdleMode(IdleMode.kBrake);
+    Hardware.backRight.setIdleMode(IdleMode.kBrake);
+
+    Trajectory left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
+    Trajectory right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
+    
+    //Purposely Flipped
+    Hardware.rightFollower = new EncoderFollower(left_trajectory);
+    Hardware.leftFollower = new EncoderFollower(right_trajectory);
+  
+    Hardware.leftFollower.configureEncoder((int)(getRightEncoderPosition()), k_ticks_per_rev, k_wheel_diameter);
+    Hardware.leftFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / -k_max_velocity, 0);
+
+    Hardware.rightFollower.configureEncoder((int)(getleftEncoderPosition()), k_ticks_per_rev, k_wheel_diameter);
+    Hardware. rightFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / -k_max_velocity, 0);
+      
+    notifier = new Notifier(this::followPath);
+    notifier.startPeriodic(left_trajectory.get(0).dt);
+  }
+
+
   public void followPath() {
     if (Hardware.leftFollower.isFinished() || Hardware.rightFollower.isFinished()) {
       SmartDashboard.putBoolean("stop", true);
       notifier.stop();
-      leftGroup.set(0);
-      rightGroup.set(0);
-
+      setLeftRightMotorOutputs(0, 0);
     } 
     
     else {
@@ -144,13 +156,11 @@ public class Drivetrain extends Subsystem {
       double left_speed = Hardware.leftFollower.calculate((int)(getleftEncoderPosition() * 42));
       double right_speed = Hardware.rightFollower.calculate((int)(getRightEncoderPosition() * 42));
       double heading = navX.getAngle();
-      double desired_heading = -Pathfinder.r2d(Hardware.leftFollower.getHeading());
-      double heading_difference = Pathfinder.boundHalfDegrees(desired_heading + heading);
+      double desired_heading = Pathfinder.r2d(Hardware.leftFollower.getHeading());
+      double heading_difference = Pathfinder.boundHalfDegrees(desired_heading - heading);
       double turn =  -0.8 * (1.0/78.0) * heading_difference;
-      //double turn = 0;
-      setLeftRightMotorOutputs(left_speed + turn, (right_speed - turn));
-     // leftGroup.set(left_speed + turn);
-     // rightGroup.set(-1 * (right_speed - turn));
+      setLeftRightMotorOutputs(left_speed + turn, right_speed - turn);
+
     }
 
   }
@@ -161,7 +171,6 @@ public class Drivetrain extends Subsystem {
 
   public double getRightEncoderPosition() {
     return (Hardware.frontRightEncoder.getPosition() + Hardware.backRightEncoder.getPosition()) / 2;
-    //return Hardware.frontRightEncoder.getPosition();
   }
 
 
@@ -226,7 +235,6 @@ public class Drivetrain extends Subsystem {
       rightPwm = -1.0;
     }
 
-    SmartDashboard.putNumber("TEST", leftPwm);
     setLeftRightMotorOutputs(Constants.kInvertedMotors * leftPwm, Constants.kInvertedMotors * (rightPwm));
   }
 
@@ -276,9 +284,30 @@ public class Drivetrain extends Subsystem {
     };
   }
 
+
+  /**
+   * 
+   * @param invert true = invert, false = normal
+   */
+  public void invertMotors(boolean invert){
+    Hardware.frontRight.setInverted(!invert);
+    Hardware.backRight.setInverted(!invert); 
+    Hardware.frontLeft.setInverted(invert);
+    Hardware.backLeft.setInverted(invert); 
+
+  }
+
   @Override
   protected void initDefaultCommand() {
     setDefaultCommand(new DriveWithJoystick());
+  }
+
+
+  public void log(){
+    SmartDashboard.putNumber("Drivetrain Left Encoder", getleftEncoderPosition());
+    SmartDashboard.putNumber("Drivetrain Right", getRightEncoderPosition());    
+    SmartDashboard.putNumber("NavX", getYaw());
+
   }
 
 }

@@ -7,25 +7,19 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.CargoIntake;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
-//import frc.robot.subsystems.GroundIntake;
 import frc.robot.subsystems.PanelIntake;
 
 
@@ -36,7 +30,6 @@ public class Robot extends TimedRobot {
   public static OI oi;
   public static CargoIntake cargoIntake;
   public static PanelIntake panelIntake;
-  //public static GroundIntake groundIntake;
   public static Climber climber;
   public static Compressor c;
 
@@ -45,8 +38,6 @@ public class Robot extends TimedRobot {
   public static AutonGoal goal;
   public static int autonStage;
 
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   public enum RobotState {
     DISABLED, TELEOP, AUTON
@@ -68,41 +59,79 @@ public class Robot extends TimedRobot {
     panelIntake = new PanelIntake();
     climber = new Climber();
     oi = new OI(); 
+    CameraServer.getInstance().startAutomaticCapture();
+
 
     Hardware.armOne.setNeutralMode(NeutralMode.Coast);
     Hardware.armTwo.setNeutralMode(NeutralMode.Coast);
     Hardware.armThree.setNeutralMode(NeutralMode.Coast);
     Hardware.armFour.setNeutralMode(NeutralMode.Coast);
+    
     //setting resolution here for usbcam
     //UsbCamera cam = CameraServer.getInstance().startAutomaticCapture();
     //cam.setResolution(640, 480);
-
-    //original camera intialization code
-    CameraServer.getInstance().startAutomaticCapture();
-
-
-    SmartDashboard.putString("Enter path selection: ", "default");
-   // drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
 
     currState = RobotState.DISABLED;
     autonStage =1;
   }
 
+
   @Override
   public void robotPeriodic() {
     cargoIntake.log();
     arm.log();
+    drivetrain.log();
+    panelIntake.log();
     
-    SmartDashboard.putNumber("NavX", Robot.drivetrain.getYaw());
     SmartDashboard.putString("Possible Start Locations", "Left, Center, Right");
     SmartDashboard.putString("Possible Start Height", "Low, High");
     SmartDashboard.putString("Possible Auton Goal", "Center, Left, Right, Rocket");
-    SmartDashboard.putNumber("Drivetrain Left Encoder", drivetrain.getleftEncoderPosition());
-    SmartDashboard.putNumber("Drivetrain Right", drivetrain.getRightEncoderPosition());    
- //   SmartDashboard.putNumber("Climber Encoder", Hardware.rightClimb.getSelectedSensorPosition());
-    SmartDashboard.putBoolean("Hatch Detected", panelIntake.limitSwitch.get());
+
+    String location = SmartDashboard.getString("Start Location", "default");
+    String autonGoal = SmartDashboard.getString("AutonGoal", "default");
+    String height = SmartDashboard.getString("Height:", "default");
+
+    location = location.toLowerCase();
+    autonGoal = autonGoal.toLowerCase();
+    height = height.toLowerCase();
+
+   switch (location){
+
+      case "left":
+        if(height.equals("low")){
+          startLocation = RobotStartLocation.LEFT_BOTTOM;
+        }else{
+          startLocation = RobotStartLocation.LEFT_TOP;
+        }
+
+        break;
       
-  
+      case "right":
+        if(height.equals("low")){
+          startLocation = RobotStartLocation.RIGHT_BOTTOM;
+        }else{
+          startLocation = RobotStartLocation.RIGHT_TOP;
+        }
+
+        break;
+
+      case "center":
+        startLocation = RobotStartLocation.CENTER;
+        break;
+   }
+
+   switch(autonGoal){
+      case "left":
+        goal = AutonGoal.LEFT_CARGOSHIP;  
+        break;
+
+      case "right":
+        goal = AutonGoal.RIGHT_CARGOSHIP;  
+        break;        
+      case "rocket":
+        goal = AutonGoal.ROCKET;  
+        break;        
+   }
   }
 
  
@@ -113,7 +142,7 @@ public class Robot extends TimedRobot {
 		Hardware.frontRight.setIdleMode(IdleMode.kCoast);
     Hardware.backRight.setIdleMode(IdleMode.kCoast);
     
-    //Hardware.groundPivot.set(ControlMode.PercentOutput, 0.0);
+
   }
 
 
@@ -125,19 +154,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     currState = RobotState.AUTON;
 
-    
-    String location = SmartDashboard.getString("Start Location", "default");
-    String autonGoal = SmartDashboard.getString("AutonGoal", "default");
-    String height = SmartDashboard.getString("Height:", "default");
-
-
-
-
-
-    //    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
-
     drivetrain.navX.zeroYaw();
-    m_autonomousCommand = m_chooser.getSelected();
 
     Hardware.frontLeftEncoder.setPosition(0);
     Hardware.frontRightEncoder.setPosition(0);
@@ -147,8 +164,8 @@ public class Robot extends TimedRobot {
     arm.firstTime = true;
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;
-    Hardware.armOne.setSelectedSensorPosition(0);
 
+    Hardware.armOne.setSelectedSensorPosition(0);
     Hardware.rightClimb.setSelectedSensorPosition(0);
     
     
