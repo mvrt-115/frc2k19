@@ -8,29 +8,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.robot.Robot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class DriveToTarget extends CommandGroup {
+public class DrivePath2 extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public DriveToTarget(String path1, String path2, String path3, int stage) {
-    
+  public DrivePath2(String path) {
 
-    addSequential(new FollowPath(path2));
+    SmartDashboard.putNumber("TESTEST", 2222);
+    addSequential(new FollowPath(path, true));
 
-  /*  if(stage ==1){
-      addSequential(new FollowPath(path2));
-    }
-    
-    if(stage ==2){
-      addSequential(new FollowPath(path2));
-    }
-
-    if(stage ==3){
-      addSequential(new FollowPath(path3));
-    }
-   */
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
@@ -47,7 +35,5 @@ public class DriveToTarget extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-
-   // Robot.autonStage++;
   }
 }

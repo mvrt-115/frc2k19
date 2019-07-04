@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutonRoutine;
-import frc.robot.commands.DriveToTarget;
+import frc.robot.commands.DrivePath1;
+import frc.robot.commands.DrivePath2;
 import frc.robot.commands.ExtendClimb;
 import frc.robot.commands.ExtendRelease;
 import frc.robot.commands.IntakeCargo;
@@ -109,12 +110,13 @@ public class OI {
     outtakePanel.whenActive(new OuttakePanel());
     extendRelease.whenPressed(new ExtendRelease());
 
-    extendClimb.whenPressed(new ExtendClimb());
+   // extendClimb.whenPressed(new ExtendClimb());
   
     visionControl.whenPressed(new AutoAlign());
 
-    followPath.whenPressed(new DriveToTarget("TestStraight", "TestCurve", ".", Robot.autonStage));
-  //  followPath.whenPressed(new AutonRoutine(Robot.startLocation, Robot.goal, Robot.autonStage));
+    //followPath.whenPressed(new DriveToTarget("TestStraight", "TestCurve", ".", Robot.autonStage));
+    followPath.whenPressed(new DrivePath1("TestStraight"));
+    //  followPath.whenPressed(new AutonRoutine(Robot.startLocation, Robot.goal, Robot.autonStage));
   }
 
   

@@ -86,6 +86,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Possible Start Locations", "Left, Center, Right");
     SmartDashboard.putString("Possible Start Height", "Low, High");
     SmartDashboard.putString("Possible Auton Goal", "Center, Left, Right, Rocket");
+    SmartDashboard.putNumber("STAGE AUTON", autonStage);
 
     String location = SmartDashboard.getString("Start Location", "default");
     String autonGoal = SmartDashboard.getString("AutonGoal", "default");

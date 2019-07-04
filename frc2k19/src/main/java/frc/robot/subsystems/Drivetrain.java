@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -31,9 +32,12 @@ import jaci.pathfinder.followers.EncoderFollower;
 public class Drivetrain extends Subsystem {
 
 
-  private int k_ticks_per_rev = 42 * 9;
+  private int k_ticks_per_rev = 42 * 8;
   private double k_wheel_diameter = 0.1524;   //0.56
-  private double k_max_velocity = 17.5;
+  private double k_max_velocity = 3;
+
+  //Max Spd 14.92 ft
+  //Max Accel 
 
   public AHRS navX;
   private Notifier notifier;
@@ -61,11 +65,11 @@ public class Drivetrain extends Subsystem {
     Hardware.leftFollower = new EncoderFollower();
     Hardware.rightFollower = new EncoderFollower();
 
-    Hardware.frontLeft.setOpenLoopRampRate(0.3);
+   /* Hardware.frontLeft.setOpenLoopRampRate(0.3);
     Hardware.frontRight.setOpenLoopRampRate(0.3);
     Hardware.backLeft.setOpenLoopRampRate(0.3);
     Hardware.backRight.setOpenLoopRampRate(0.3);
-
+    */
     Hardware.frontLeft.setSmartCurrentLimit(40, 45);
     Hardware.frontRight.setSmartCurrentLimit(40, 45);
     Hardware.backLeft.setSmartCurrentLimit(40, 45);
@@ -99,47 +103,21 @@ public class Drivetrain extends Subsystem {
 		Hardware.frontRight.setIdleMode(IdleMode.kBrake);
     Hardware.backRight.setIdleMode(IdleMode.kBrake);
 
-    Trajectory left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
-    Trajectory right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
+    Trajectory right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
+    Trajectory left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
     
-    Hardware.leftFollower = new EncoderFollower(left_trajectory);
-    Hardware.rightFollower = new EncoderFollower(right_trajectory);
-  
-    Hardware.leftFollower.configureEncoder((int)(Hardware.frontLeftEncoder.getPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
-    Hardware.leftFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / k_max_velocity, 0);
-
-    Hardware.rightFollower.configureEncoder((int)(-Hardware.frontLeftEncoder.getPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
-    Hardware. rightFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / k_max_velocity, 0);
-      
-    notifier = new Notifier(this::followPath);
-    notifier.startPeriodic(left_trajectory.get(0).dt);
-
-  }
-
-
-  public void initializePathFollowerReverse(String k_path_name){
-    navX.zeroYaw();
-
-    Hardware.frontLeft.setIdleMode(IdleMode.kBrake);
-		Hardware.backLeft.setIdleMode(IdleMode.kBrake);
-		Hardware.frontRight.setIdleMode(IdleMode.kBrake);
-    Hardware.backRight.setIdleMode(IdleMode.kBrake);
-
-    Trajectory left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
-    Trajectory right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
-    
-    //Purposely Flipped
     Hardware.rightFollower = new EncoderFollower(left_trajectory);
     Hardware.leftFollower = new EncoderFollower(right_trajectory);
   
-    Hardware.leftFollower.configureEncoder((int)(getRightEncoderPosition()), k_ticks_per_rev, k_wheel_diameter);
-    Hardware.leftFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / -k_max_velocity, 0);
+    Hardware.leftFollower.configureEncoder((int)(getRightEncoderPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
+    Hardware.leftFollower.configurePIDVA(1, 0.0, 0.0, 1 / Constants.MAX_VELOCITY, Constants.MAX_ACCEL);
 
-    Hardware.rightFollower.configureEncoder((int)(getleftEncoderPosition()), k_ticks_per_rev, k_wheel_diameter);
-    Hardware. rightFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / -k_max_velocity, 0);
+    Hardware.rightFollower.configureEncoder((int)(getleftEncoderPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
+    Hardware. rightFollower.configurePIDVA(1, 0.0, 0.0, 1 / Constants.MAX_VELOCITY, Constants.MAX_ACCEL);
       
     notifier = new Notifier(this::followPath);
     notifier.startPeriodic(left_trajectory.get(0).dt);
+
   }
 
 
@@ -156,14 +134,46 @@ public class Drivetrain extends Subsystem {
       double left_speed = Hardware.leftFollower.calculate((int)(getleftEncoderPosition() * 42));
       double right_speed = Hardware.rightFollower.calculate((int)(getRightEncoderPosition() * 42));
       double heading = navX.getAngle();
-      double desired_heading = Pathfinder.r2d(Hardware.leftFollower.getHeading());
-      double heading_difference = Pathfinder.boundHalfDegrees(desired_heading - heading);
-      double turn =  -0.8 * (1.0/78.0) * heading_difference;
-      setLeftRightMotorOutputs(left_speed + turn, right_speed - turn);
+      double desired_heading = -Pathfinder.r2d(Hardware.leftFollower.getHeading());
+      double heading_difference =  Pathfinder.boundHalfDegrees(desired_heading + heading);
+      double turn =  -1.8 * (1.0/78.0) * heading_difference;
+     // double turn = 0; 
+     setLeftRightMotorOutputs(left_speed + turn, right_speed - turn);
 
     }
 
+    SmartDashboard.putNumber("ERROR", (3 - getleftEncoderPosition()) /9 * .1524);
+
   }
+
+  public void followPathReverse() {
+    if (Hardware.leftFollower.isFinished() || Hardware.rightFollower.isFinished()) {
+      SmartDashboard.putBoolean("stop", true);
+      notifier.stop();
+      setLeftRightMotorOutputs(0, 0);
+    } 
+    
+    else {
+      SmartDashboard.putBoolean("start", true);
+
+      double left_speed = Hardware.leftFollower.calculate((int)(-getleftEncoderPosition() * 42));
+      double right_speed = Hardware.rightFollower.calculate((int)(-getRightEncoderPosition() * 42));
+      double heading = navX.getAngle();
+      double desired_heading = -Pathfinder.r2d(Hardware.leftFollower.getHeading());
+      double heading_difference =  Pathfinder.boundHalfDegrees(desired_heading + heading);
+      double turn =  -1.8 * (1.0/78.0) * heading_difference;
+     // double turn = 0; 
+     setLeftRightMotorOutputs(-(right_speed - turn), -(left_speed + turn));
+
+    }
+
+    SmartDashboard.putNumber("ERROR", (3 - getleftEncoderPosition()) /9 * .1524);
+
+  }
+
+
+
+
 
   public double getleftEncoderPosition() {
     return (Hardware.frontLeftEncoder.getPosition() + Hardware.backLeftEncoder.getPosition()) / 2;

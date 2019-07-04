@@ -15,22 +15,37 @@ import frc.robot.util.Limelight.LED_MODE;
 public class FollowPath extends Command {
   
   private String path;
+  private boolean isBackwards;
   
-  public FollowPath(String path) {
+  public FollowPath(String path, boolean isBackwards) {
     requires(Robot.drivetrain);
     this.path = path;
+    this.isBackwards = isBackwards;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+
+    Hardware.backRightEncoder.setPosition(0);
+    Hardware.backLeftEncoder.setPosition(0);
+    Hardware.frontRightEncoder.setPosition(0);
+    Hardware.frontLeftEncoder.setPosition(0);
+     
     Robot.drivetrain.initializePathFollower(path);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-        Robot.drivetrain.followPath();
+
+    if(isBackwards){
+      Robot.drivetrain.followPathReverse();
+    }
+    else{
+      Robot.drivetrain.followPath();
+    }
+        
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -47,6 +62,7 @@ public class FollowPath extends Command {
     Hardware.backLeftEncoder.setPosition(0);
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.frontLeftEncoder.setPosition(0);
+    Robot.drivetrain.invertMotors(false);
     new FlashLimelight().start();
     new DriveWithJoystick().start();
   }

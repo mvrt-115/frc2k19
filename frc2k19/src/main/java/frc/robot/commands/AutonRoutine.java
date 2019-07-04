@@ -95,7 +95,18 @@ public class AutonRoutine extends InstantCommand {
        break;
     }
 
-    new DriveToTarget(path1, path2, path3, autonStage).start();
+    if(autonStage ==1)
+      new DrivePath1(path1).start();
+
+    if(autonStage ==2)
+      new DrivePath1(path2).start();
+      
+    if(autonStage ==3)
+    new DrivePath1(path3).start();
+    
+
+
+    //new DriveToTarget(path1, path2, path3, autonStage).start();
 
 
   }
