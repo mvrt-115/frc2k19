@@ -47,5 +47,8 @@ public class Hardware {
     public static TalonSRX leftClimbRoller;
 
     public static DoubleSolenoid claw;
-    public static DoubleSolenoid activeRelease;
+    public static DoubleSolenoid slider;
+
+    public static DoubleSolenoid pancakeLeft;
+    public static DoubleSolenoid pancakeRight;
 }

@@ -34,7 +34,7 @@ public class CargoIntake extends Subsystem {
     Hardware.cargoIntakeTop.setNeutralMode(NeutralMode.Brake);
     Hardware.cargoIntakeBottom.setNeutralMode(NeutralMode.Brake);
     
-    breakbeam = new DigitalInput(3);
+    breakbeam = new DigitalInput(0);
   } 
 
   public void intakeCargo() {
@@ -49,13 +49,13 @@ public class CargoIntake extends Subsystem {
       Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors *-0.77);
     }else if(Robot.arm.setpoint == Constants.kCargoShipFront){
       Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.5); // -0.6 for climbers
-      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.5); // 0.6 for climbers
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.5);// 0.6 for climbers
     } else if(Robot.arm.setpoint == Constants.kCargoShipBack){
        Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.4);
         Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.4); 
     }else {
-     // Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.3);
-      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, -Constants.kInvertedMotors * -0.3);
+      Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, -0.3);
+      Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, Constants.kInvertedMotors * 0.3);
     }
   }
 
@@ -72,8 +72,7 @@ public class CargoIntake extends Subsystem {
 
   //Test 
   public void stop() {
-    Hardware.cargoIntakeTop.
-    set(ControlMode.PercentOutput, 0);
+    Hardware.cargoIntakeTop.set(ControlMode.PercentOutput, 0);
     Hardware.cargoIntakeBottom.set(ControlMode.PercentOutput, 0);
   }
 

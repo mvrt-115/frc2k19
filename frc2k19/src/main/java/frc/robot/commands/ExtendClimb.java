@@ -18,6 +18,7 @@ public class ExtendClimb extends Command {
 
    protected void initialize() {
     Robot.climber.climb();
+    System.out.print("Climbing started");
     stage = 0;
     setTimeout(1);
   }
@@ -36,6 +37,7 @@ public class ExtendClimb extends Command {
   protected void end() {
     Robot.climber.stopWheels();
     Robot.climber.retract();
+    System.out.print("Climbing ended\n\n");
   }
 
   protected void interrupted() {}

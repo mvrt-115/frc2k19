@@ -7,7 +7,9 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Hardware;
 import frc.robot.Robot;
 
 public class IntakePanel extends Command {
@@ -16,6 +18,8 @@ public class IntakePanel extends Command {
 
   protected void initialize() {
     Robot.panelIntake.intakePanel();
+    // Hardware.claw.set(Value.kReverse);
+   // Robot.panelIntake.pancakeLeft.set(Value.kForward);
   }
 
   protected void execute() {}

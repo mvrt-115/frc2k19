@@ -23,8 +23,7 @@ public class IntakeCargo extends Command {
   }
 
   protected void initialize() {
-    currState = CargoState.AUTO;
-
+     currState = CargoState.AUTO;
     if(Robot.oi.getIntakeCargo())
       currState = CargoState.MANUAL;
     else {
@@ -44,6 +43,7 @@ public class IntakeCargo extends Command {
   }
 
   protected boolean isFinished() {
+
     if(currState == CargoState.MANUAL)
       return !Robot.oi.getIntakeCargo();
     else if(currState == CargoState.AUTO)

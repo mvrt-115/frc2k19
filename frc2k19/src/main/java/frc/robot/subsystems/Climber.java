@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
@@ -42,12 +43,12 @@ public class Climber extends Subsystem {
     Hardware.rightClimbRoller = new TalonSRX(Constants.kLeftClimbRoller);
     Hardware.leftClimbRoller = new TalonSRX(Constants.kRightClimbRoller);
     
-    Hardware.leftClimb.follow(Hardware.rightClimb);
+   // Hardware.leftClimb.follow(Hardware.rightClimb);
     Hardware.rightClimb.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 
     Hardware.rightClimb.setSensorPhase(true);
-    Hardware.rightClimb.setInverted(false);
-    Hardware.leftClimb.setInverted(true);
+    Hardware.rightClimb.setInverted(true);
+    Hardware.leftClimb.setInverted(false);
 
     Hardware.rightClimb.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
     Hardware.rightClimb.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
@@ -85,27 +86,35 @@ public class Climber extends Subsystem {
 
   public void loop() {
 
-    Robot.panelIntake.loop();
     switch(currState){
       case ZEROED:
         break;
       case EXTENDING:
         Hardware.rightClimb.set(ControlMode.MotionMagic, Constants.kClimb);
-        //driveWheels();
+        //Hardware.leftClimb.follow(Hardware.rightClimb);
+        Hardware.leftClimb.set(ControlMode.MotionMagic, Constants.kClimb);
+        driveWheels();
         break;
       case RETRACTING:
-        //stopWheels();
+        stopWheels();
         //if(Hardware.rightClimb.getSelectedSensorPosition() < 2000){
          // currState = ClimberState.ZEROED;
         //}else {
-          Hardware.rightClimb.set(ControlMode.MotionMagic, Constants.kClimbZero);
+         Hardware.rightClimb.set(ControlMode.MotionMagic, Constants.kClimbZero);
+         Hardware.leftClimb.set(ControlMode.MotionMagic, Constants.kClimbZero);
+
         //}
         break; 
       case PUSHING:
           Hardware.rightClimb.set(ControlMode.MotionMagic, Constants.kClimbPush);
+         // Hardware.leftClimb.follow(Hardware.rightClimb);
+          Hardware.leftClimb.set(ControlMode.MotionMagic, Constants.kClimbPush);
+
           break;
       case CARGOSHOT:
-          Hardware.rightClimb.set(ControlMode.MotionMagic, -500);
+      //    Hardware.rightClimb.set(ControlMode.MotionMagic, -500);
+       //   Hardware.leftClimb.set(ControlMode.MotionMagic, -500);
+
           break;
     }
 
@@ -137,6 +146,17 @@ public class Climber extends Subsystem {
   public void driveWheels(){
     Hardware.rightClimbRoller.set(ControlMode.PercentOutput, -1);
     Hardware.leftClimbRoller.set(ControlMode.PercentOutput, -1);
+  }
+
+  public void log(){
+    SmartDashboard.putNumber("Climber Encoder Value", Hardware.rightClimb.getSelectedSensorPosition(0));
+
+   SmartDashboard.putNumber("Left Climber Voltage", Hardware.leftClimb.getMotorOutputVoltage());
+    SmartDashboard.putNumber("Right Climber Voltage", Hardware.rightClimb.getMotorOutputVoltage());
+
+    SmartDashboard.putNumber("Right Climber Output", Hardware.rightClimb.getMotorOutputPercent());
+    SmartDashboard.putNumber("Left Climber Output", Hardware.leftClimb.getMotorOutputPercent());
+   
   }
 
   @Override

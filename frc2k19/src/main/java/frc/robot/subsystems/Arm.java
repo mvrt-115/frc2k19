@@ -49,7 +49,7 @@ public class Arm extends Subsystem {
     Hardware.armThree = new TalonSRX(Constants.kArmThree);
     Hardware.armFour = new TalonSRX(Constants.kArmFour);
 
-    hallEffect1 = new DigitalInput(0);
+    hallEffect1 = new DigitalInput(2);
 
     Hardware.armTwo.follow(Hardware.armOne);
     Hardware.armThree.follow(Hardware.armOne);
@@ -57,8 +57,8 @@ public class Arm extends Subsystem {
 
     if(Constants.kCompbot) {
       Hardware.armOne.setInverted(false);
-      Hardware.armThree.setInverted(false);
-      Hardware.armTwo.setInverted(true);
+      Hardware.armThree.setInverted(true);
+      Hardware.armTwo.setInverted(false);
       Hardware.armFour.setInverted(true);
     }
 
@@ -121,8 +121,8 @@ public class Arm extends Subsystem {
     } 
     
     if(setpoint !=0 && setpoint !=Constants.kZero  && setpoint != Constants.kCargoIntakeLevel){
-      Hardware.activeRelease.set(Value.kReverse);  
-      Hardware.claw.set(Value.kForward);    
+   //   Hardware.slider.set(Value.kReverse);  
+   //   Hardware.claw.set(Value.kForward);    
     }
     
 
@@ -140,6 +140,7 @@ public class Arm extends Subsystem {
         Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
       }
       break;
+
     case SETPOINT:   
       if(setpoint == Constants.kCargoIntakeLevel){
 
@@ -150,7 +151,7 @@ public class Arm extends Subsystem {
           Hardware.armOne.set(ControlMode.MotionMagic, setpoint);
         }
 
-    
+        
       }
       else{
         SmartDashboard.putString("Arm State", "setpoint");
@@ -167,11 +168,11 @@ public class Arm extends Subsystem {
       break;
     case MANUAL:
 
-      if(!hallEffect1.get()){
+  /*    if(!hallEffect1.get()){
         Hardware.armOne.setSelectedSensorPosition(0);
         firstTime = false;
       }
-
+      */
       SmartDashboard.putString("Arm State", "manual");
       manualControl(0.5 * Robot.oi.getArmThrottle());
       break;
@@ -216,7 +217,7 @@ public class Arm extends Subsystem {
   public void log(){
     SmartDashboard.putNumber("Arm Encoder Value", getArmEncoderValue());
     SmartDashboard.putBoolean("ZERO Limit Switch", hallEffect1.get());
-    SmartDashboard.putNumber("Arm Output", Hardware.armOne.getMotorOutputPercent());
+//    SmartDashboard.putNumber("Arm Output", Hardware.armOne.getMotorOutputPercent());
 
   }
 }

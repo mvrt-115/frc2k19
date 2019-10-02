@@ -17,7 +17,7 @@ public class DrivePath2 extends CommandGroup {
   public DrivePath2(String path) {
 
     SmartDashboard.putNumber("TESTEST", 2222);
-    addSequential(new FollowPath(path, true));
+    //addSequential(new FollowPath(path, true));
 
     // Add Commands here:
     // e.g. addSequential(new Command1());

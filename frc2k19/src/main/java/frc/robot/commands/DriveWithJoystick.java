@@ -30,8 +30,9 @@ public class DriveWithJoystick extends Command {
 
 
   protected void execute() {
-      Robot.drivetrain.cheesyDriveWithJoystick(0.8 *Robot.oi.getThrottle(), 0.6 * Robot.oi.getWheel(), Robot.oi.getQuickTurn());   
-  }
+     Robot.drivetrain.cheesyDriveWithJoystick(0.8 *Robot.oi.getThrottle(), 0.6 * Robot.oi.getWheel(), Robot.oi.getQuickTurn());   
+   // Robot.drivetrain.setLeftRightMotorOutputs(Robot.oi.getThrottle(), Robot.oi.getWheel());
+}
   
   protected boolean isFinished() {
      return false;

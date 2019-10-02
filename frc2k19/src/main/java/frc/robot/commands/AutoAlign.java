@@ -36,7 +36,11 @@ public class AutoAlign extends Command {
   @Override
   protected void execute() {
     double angle = Robot.drivetrain.limelight.getAngle();
-    Robot.drivetrain.driveWithTarget(Robot.oi.getThrottle(), angle);
+    if(!Robot.arm.isInverted){
+      Robot.drivetrain.driveWithTarget(Robot.oi.getThrottle(), angle);
+    }else {
+      Robot.drivetrain.driveWithTarget(-Robot.oi.getThrottle(), angle);
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()

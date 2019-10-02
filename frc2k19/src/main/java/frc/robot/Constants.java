@@ -48,35 +48,36 @@ public class Constants {
 	public static final int kClimbPush = 7000; // 6000
 
 	// Motor Controller ID's
-	public static final int kDriveFrontLeft = 5;  //4 5
-	public static final int kDriveBackLeft = 7;   //8 7
-	public static final int kDriveFrontRight = 3; //1 3
- 	public static final int kDriveBackRight = 6; //2 6 
+	public static final int kDriveFrontLeft = 5;  //4 5			2
+	public static final int kDriveBackLeft = 2;   //8 7			1
+	public static final int kDriveFrontRight = 3; //1 3			4
+ 	public static final int kDriveBackRight = 8; //2 6 			8
 
 	public static final int kGroundPivot = 0; // 2   31 
 	public static final int kGroundIntake = 0; // 20  32 
 
-	public static final int kArmOne = 8; //34 8
-	public static final int kArmTwo = 4; //35 4
-	public static final int kArmThree = 22; //33 22
-	public static final int kArmFour = 18; //36 18 
+	public static final int kArmOne = 32;
+	 //34 8
+	public static final int kArmTwo = 31; //35 4
+	public static final int kArmThree = 40; //33 22
+	public static final int kArmFour = 30; //36 18 
 
-	public static final int kLeftClimb = 20;	//	32 20
-	public static final int kRightClimb = 11;	//	39 11
+	public static final int kLeftClimb = 33;	//	32 20
+	public static final int kRightClimb = 34;	//	39 9
 
-	public static final int kRightClimbRoller = 19; // 37 19
-	public static final int kLeftClimbRoller = 2; // 31 2 
+	public static final int kRightClimbRoller = 39; // 37 19
+	public static final int kLeftClimbRoller = 35; // 31 2 
 
-	public static final int kCargoIntakeTop = 42; //30 42
-	public static final int kCargoIntakeBottom = 21; //38  21
+	public static final int kCargoIntakeTop = 39; //30 19
+	public static final int kCargoIntakeBottom = 36; //38  21
 	
 	//Pathfinder Constants
-	public static final double TIME_STEP = 0.05; //Seconds
-	public static final double WHEEL_DIAMETER = .1524; //Meters 
-	public static final double WHEELBASE_WIDTH = 0.559; //Meters 
-	public static final double MAX_VELOCITY = 2; // m/s  8
-	public static final double MAX_ACCEL = .5;  // 	8
-	public static final double MAX_JERK = 60; // 60
+	public static final double TIME_STEP = 0.02; //Seconds
+	public static final double WHEEL_DIAMETER = .56; //Feet 
+	public static final double WHEELBASE_WIDTH = 1.87; //Feet 
+	public static final double MAX_VELOCITY = 17.5; // ft/s  8
+	public static final double MAX_ACCEL = 6.7;  // 	
+	public static final double MAX_JERK = 197; // 
 	public static final double MAX_OFFSET = .20;
 	public static final double GEAR_RATIO = 8.8;
 	public static final int TICKS_PER_ROTATION = 42 * 9; 

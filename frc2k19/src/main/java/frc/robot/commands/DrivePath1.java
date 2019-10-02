@@ -13,11 +13,11 @@ public class DrivePath1 extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public DrivePath1(String path) {
+  public DrivePath1() {
 
-    addSequential(new FollowPath(path, false));
+    addSequential(new FollowPath());
 
-    // Add Commands here:
+    //  Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
     // these will run in order.
