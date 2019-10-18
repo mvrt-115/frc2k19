@@ -59,11 +59,11 @@ public class FollowPath extends Command {
   protected void end() {
     Robot.drivetrain.notifier.stop();
     Robot.drivetrain.setLeftRightMotorOutputs(0, 0);
-    Hardware.backRightEncoder.setPosition(0);
+  /*  Hardware.backRightEncoder.setPosition(0);
     Hardware.backLeftEncoder.setPosition(0);
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.frontLeftEncoder.setPosition(0);
-    Robot.drivetrain.invertMotors(false);
+   */ 
     new FlashLimelight().start();
     new DriveWithJoystick().start();
   }

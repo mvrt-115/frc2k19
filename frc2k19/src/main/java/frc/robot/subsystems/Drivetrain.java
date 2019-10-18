@@ -6,6 +6,8 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
+
+import java.io.IOException;
 import java.util.function.DoubleFunction;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -104,12 +106,22 @@ public class Drivetrain extends Subsystem {
 		Hardware.frontRight.setIdleMode(IdleMode.kBrake);
     Hardware.backRight.setIdleMode(IdleMode.kBrake);
 */
-    Trajectory right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
-    Trajectory left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
+
+    Trajectory right_trajectory;
+    Trajectory left_trajectory;
     
+    try{
+      right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
+      left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
+      
+    }catch(IOException e){
+      right_trajectory = new Trajectory(1);
+      left_trajectory = new Trajectory(1);
+    }
+
     Hardware.rightFollower = new EncoderFollower(left_trajectory);
     Hardware.leftFollower = new EncoderFollower(right_trajectory);
-  
+     
     Hardware.leftFollower.configureEncoder((int)(getRightEncoderPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
     Hardware.leftFollower.configurePIDVA(0.9, 0.0, 0.0, 1 / Constants.MAX_VELOCITY, 0);
 
@@ -268,11 +280,11 @@ public class Drivetrain extends Subsystem {
    * @param invert true = invert, false = normal
    */
   public void invertMotors(boolean invert){
-    Hardware.frontRight.setInverted(!invert);
+   /* Hardware.frontRight.setInverted(!invert);
     Hardware.backRight.setInverted(!invert); 
     Hardware.frontLeft.setInverted(invert);
     Hardware.backLeft.setInverted(invert); 
-
+    */
   }
 
   @Override

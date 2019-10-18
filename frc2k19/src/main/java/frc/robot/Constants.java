@@ -50,8 +50,8 @@ public class Constants {
 	// Motor Controller ID's
 	public static final int kDriveFrontLeft = 5;  //4 5			2
 	public static final int kDriveBackLeft = 2;   //8 7			1
-	public static final int kDriveFrontRight = 3; //1 3			4
- 	public static final int kDriveBackRight = 8; //2 6 			8
+	public static final int kDriveFrontRight = 6; //1 3			4
+ 	public static final int kDriveBackRight = 1; //2 6 			8
 
 	public static final int kGroundPivot = 0; // 2   31 
 	public static final int kGroundIntake = 0; // 20  32 

@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -41,6 +42,8 @@ public class Robot extends TimedRobot {
   SendableChooser<Integer> autonStart = new SendableChooser<>();
   SendableChooser<Integer> autonEnd = new SendableChooser<>();
 
+  public static String lastSend;
+	public static I2C arduino;
 
   public enum RobotState {
     DISABLED, TELEOP, AUTON
@@ -89,6 +92,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+
+
+    
     cargoIntake.log();
     arm.log();
     drivetrain.log();
@@ -96,46 +102,7 @@ public class Robot extends TimedRobot {
    
     climber.log();
 
-    SmartDashboard.putString("AutonPath", autonPath);
-  }
-
- 
-  public void disabledInit() {
-    currState = RobotState.DISABLED;
-    Hardware.frontLeft.setIdleMode(IdleMode.kCoast);
-		Hardware.backLeft.setIdleMode(IdleMode.kCoast);
-		Hardware.frontRight.setIdleMode(IdleMode.kCoast);
-    Hardware.backRight.setIdleMode(IdleMode.kCoast);
     
-
-  }
-
-
-  public void disabledPeriodic() {
-    Scheduler.getInstance().run();
-  }
-
- 
-  public void autonomousInit() {
-    currState = RobotState.AUTON;
-
-    drivetrain.navX.zeroYaw();
-
-    Hardware.frontLeftEncoder.setPosition(0);
-    Hardware.frontRightEncoder.setPosition(0);
-    Hardware.backLeftEncoder.setPosition(0);
-    Hardware.backRightEncoder.setPosition(0);
-
-    arm.firstTime = true;
-    arm.currState = ArmState.ZEROED;
-    arm.setpoint = 0;
-
-    Hardware.armOne.setSelectedSensorPosition(0);
-    Hardware.rightClimb.setSelectedSensorPosition(0);
-    
-  
-
-
     int autonStartLocation = autonStart.getSelected();
     int autonEndLocation = autonEnd.getSelected();
 
@@ -191,10 +158,51 @@ public class Robot extends TimedRobot {
       case 6:
         autonPath = "";
       break;
+   }
+
+
+    SmartDashboard.putString("AutonPath", autonPath);
   }
 
-  Hardware.claw.set(Value.kForward);
-  Hardware.slider.set(Value.kReverse);
+ 
+  public void disabledInit() {
+    currState = RobotState.DISABLED;
+//    updateLEDs("DISABLED");
+  /*  Hardware.frontLeft.setIdleMode(IdleMode.kCoast);
+		Hardware.backLeft.setIdleMode(IdleMode.kCoast);
+		Hardware.frontRight.setIdleMode(IdleMode.kCoast);
+    Hardware.backRight.setIdleMode(IdleMode.kCoast);
+    */
+
+  }
+
+
+  public void disabledPeriodic() {
+    Scheduler.getInstance().run();
+  }
+
+ 
+  public void autonomousInit() {
+    currState = RobotState.AUTON;
+
+    drivetrain.navX.zeroYaw();
+
+    Hardware.frontLeftEncoder.setPosition(0);
+    Hardware.frontRightEncoder.setPosition(0);
+    Hardware.backLeftEncoder.setPosition(0);
+    Hardware.backRightEncoder.setPosition(0);
+
+    arm.firstTime = true;
+    arm.currState = ArmState.ZEROED;
+    arm.setpoint = 0;
+
+    Hardware.armOne.setSelectedSensorPosition(0);
+    Hardware.rightClimb.setSelectedSensorPosition(0);
+    
+    Hardware.claw.set(Value.kForward);
+    Hardware.slider.set(Value.kReverse);
+   // updateLEDs("OTHER");
+
 
 }
 
@@ -205,10 +213,12 @@ public class Robot extends TimedRobot {
 
   public void teleopInit() {
     currState = RobotState.TELEOP;
+  //  updateLEDs("DRIVING");
   }
 
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+
 
   }
 
@@ -217,4 +227,5 @@ public class Robot extends TimedRobot {
   public String getAutonPath(){
     return autonPath;
   }
+
 }
