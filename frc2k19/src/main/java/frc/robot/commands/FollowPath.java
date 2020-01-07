@@ -10,24 +10,42 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Hardware;
 import frc.robot.Robot;
+import frc.robot.Robot.RobotState;
+import frc.robot.util.Limelight.LED_MODE;
 
 public class FollowPath extends Command {
+  
+  private String path;
+  private boolean isBackwards;
+  
   public FollowPath() {
+    requires(Robot.drivetrain);
+    this.path = Robot.autonPath;
+    this.isBackwards = false;
   }
 
   // Called just before this Command runs the first time
-  @Override
+  @Override 
   protected void initialize() {
-    Robot.drivetrain.initializePathFollower();
+    path  = Robot.autonPath;
+    if(Robot.currState == RobotState.TELEOP || Robot.autonPath == ""){
+      end();
+    }
+    
+
+    Hardware.backRightEncoder.setPosition(0);
+    Hardware.backLeftEncoder.setPosition(0);
+    Hardware.frontRightEncoder.setPosition(0);
+    Hardware.frontLeftEncoder.setPosition(0);
+     
+    Robot.drivetrain.initializePathFollower(path);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    //if(Hardware.leftFollower.isFinished() || Hardware.rightFollower.isFinished()){
-    //  double angle = Robot.drivetrain.getAngle();
-    //  Robot.drivetrain.driveWithTarget(Robot.oi.getThrottle(), angle); // throttle doesn't matter, constant being used
-    //}
+
+        
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -39,12 +57,21 @@ public class FollowPath extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.drivetrain.notifier.stop();
     Robot.drivetrain.setLeftRightMotorOutputs(0, 0);
+  /*  Hardware.backRightEncoder.setPosition(0);
+    Hardware.backLeftEncoder.setPosition(0);
+    Hardware.frontRightEncoder.setPosition(0);
+    Hardware.frontLeftEncoder.setPosition(0);
+   */ 
+    new FlashLimelight().start();
+    new DriveWithJoystick().start();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    end();
   }
 }

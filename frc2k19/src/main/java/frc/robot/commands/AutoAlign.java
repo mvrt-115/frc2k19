@@ -8,49 +8,51 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import jaci.pathfinder.Waypoint;
+import frc.robot.Robot;
+import frc.robot.util.Limelight.LED_MODE;
+import frc.robot.util.Limelight.PIPELINE_STATE;
 
-public class VisionProfile extends Command {
-  public VisionProfile() {
-
+public class AutoAlign extends Command {
+  public AutoAlign() {
+    requires(Robot.drivetrain);
+    // Use requires() here to declare subsystem dependencies
+    // eg. requires(chassis);
   }
 
   // Called just before this Command runs the first time
   @Override
-  protected void initialize() {
-  /*  double yDistance = Robot.drivetrain.getYDistance();
-    double xDistance = Robot.drivetrain.getXDistance();
-    double targetAngle = Robot.drivetrain.getFinalAngle() + Robot.drivetrain.getYaw();
-    
-    Waypoint[] points = new Waypoint[] { 
-        new Waypoint(0, 0, Robot.drivetrain.getYaw()),
-        new Waypoint(yDistance, xDistance, targetAngle)};
-    
-    new FollowProfile(points);
-    */
+  protected void initialize() { 
+    if(Robot.arm.isInverted)
+      Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.BACK_VISION);
+    else
+      Robot.drivetrain.limelight.setPipeline(PIPELINE_STATE.FRONT_VISION);
 
-    Waypoint[] points = new Waypoint[] { 
-      new Waypoint(0, 0, 0),
-      new Waypoint(1, 0, 0)};
+    Robot.drivetrain.limelight.setLED(LED_MODE.ON);
+    
 
-    //  new FollowProfile(points);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-  //  SmartDashboard.putNumber(key, value)
+    double angle = Robot.drivetrain.limelight.getAngle();
+    if(!Robot.arm.isInverted){
+      Robot.drivetrain.driveWithTarget(Robot.oi.getThrottle(), angle);
+    }else {
+      Robot.drivetrain.driveWithTarget(-Robot.oi.getThrottle(), angle);
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return !Robot.oi.getVisionTurn();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    new DriveWithJoystick().start();
   }
 
   // Called when another command which requires one or more of the same

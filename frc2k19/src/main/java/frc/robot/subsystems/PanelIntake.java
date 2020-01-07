@@ -7,57 +7,90 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
+import frc.robot.commands.FlashLimelight;
 
-/**
- * Add your docs here.
- */
 
 public class PanelIntake extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+
+  public DigitalInput limitSwitch;
 
   public PanelIntake() {
-    Hardware.claw = new DoubleSolenoid(1, 1, 0);
-    Hardware.activeRelease = new DoubleSolenoid(1, 3, 2);
+    Hardware.claw = new DoubleSolenoid(0, 5, 2);
+    Hardware.slider = new DoubleSolenoid(0, 6, 1);  // 6 1
+    limitSwitch = new DigitalInput(4);
+    Hardware.pancakeLeft = new DoubleSolenoid(3, 4);
+    Hardware.pancakeRight = new DoubleSolenoid(0, 7);
+    // 0 7
+    // 3 4
 
   }
 
-  public void extendIntake() {
+  public void intakePanel() {
 
-    if (Hardware.activeRelease.get() == Value.kReverse){
+    if(Hardware.slider.get() == Value.kReverse && Hardware.claw.get() == Value.kForward){
       Hardware.claw.set(Value.kReverse);
-      Hardware.activeRelease.set(Value.kForward);
+      Hardware.slider.set(Value.kForward);
+    }else if(Hardware.claw.get() == Value.kReverse && Hardware.slider.get() == Value.kForward){
+      if(Robot.arm.setpoint != Constants.kCargoIntakeLevel)
+          Robot.arm.setArmSetpoint(2000);
+        Hardware.claw.set(Value.kForward);
+        new FlashLimelight().start();
+    }else {
+        if(Robot.arm.setpoint == 2000)
+          Robot.arm.zeroArm();          
+        
+       Hardware.slider.set(Value.kReverse); 
+    }
+    // if(Hardware.claw.get() == Value.kForward && Hardware.slider.get() == Value.kForward )
+
+   /* if (Hardware.slider.get() == Value.kReverse && Robot.arm.setpoint != 2000){
+      Hardware.claw.set(Value.kReverse);
+      Hardware.slider.set(Value.kForward);
     }
     else if (Hardware.claw.get() == Value.kReverse){
       Hardware.claw.set(Value.kForward);
-      Robot.arm.setArmSetpoint(1500);
-    //  Timer.delay(0.5);
       
+      if(Robot.arm.setpoint != Constants.kCargoIntakeLevel)
+        Robot.arm.setArmSetpoint(2000);
+    
+    }else if(Hardware.claw.get() == Value.kForward &&    Robot.arm.setpoint == 2000){
+      new FlashLimelight().start();    
+      Robot.arm.zeroArm();
     }else{
-      Hardware.activeRelease.set(Value.kReverse);
-      Robot.arm.setArmSetpoint(0);
+      Hardware.slider.set(Value.kReverse);
+      Robot.arm.zeroArm();
+     // new FlashLimelight().start();      
+
     }
+
+    */
   }
 
-  public void retractIntake(int state) {
+  public void outtakePanel(int state) {
 
     if(state ==1) 
-       Hardware.activeRelease.set(Value.kForward);
+       Hardware.slider.set(Value.kForward);
     else if(state ==2)
       Hardware.claw.set(Value.kReverse);
     else if(state ==3)
-       Hardware.activeRelease.set(Value.kReverse);
+       Hardware.slider.set(Value.kReverse);
     else 
       Hardware.claw.set(Value.kForward);
    }
 
-  @Override
-  public void initDefaultCommand() {
-  }
+   public void initDefaultCommand() {}
+
+
+   public void log(){
+    
+    SmartDashboard.putBoolean("Hatch Detected", limitSwitch.get());
+   } 
 }

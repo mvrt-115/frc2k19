@@ -8,11 +8,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Constants;
 import frc.robot.Robot;
 
-public class OuttakeHatchGround extends Command {
-  public OuttakeHatchGround() {
+
+public class RetractClimb extends Command {
+  public RetractClimb() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
   }
@@ -20,26 +20,28 @@ public class OuttakeHatchGround extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.groundIntake.setIntakeSetpoint(Constants.kExtendIntake);
+    Robot.climber.retract();
+
+    
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.groundIntake.outtakeHatch();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Robot.oi.getGroundOuttake();
+    return !Robot.oi.getRetractClimb();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.groundIntake.setIntakeSetpoint(Constants.kStowIntake);
-    Robot.groundIntake.stop();
+    Robot.climber.stopWheels();
+    System.out.print("Climbing ended\n\n");
+
   }
 
   // Called when another command which requires one or more of the same

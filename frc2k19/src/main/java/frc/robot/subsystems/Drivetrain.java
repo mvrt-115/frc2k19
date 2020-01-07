@@ -11,23 +11,21 @@ import java.io.IOException;
 import java.util.function.DoubleFunction;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANEncoder;
+import com.revrobotics.CANEncoder;  
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Hardware;
-import frc.robot.Robot;
 import frc.robot.commands.DriveWithJoystick;
+import frc.robot.util.Limelight;
+import frc.robot.util.RollingAverage;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.Trajectory;
@@ -35,27 +33,21 @@ import jaci.pathfinder.followers.EncoderFollower;
 
 public class Drivetrain extends Subsystem {
 
-  NetworkTable table;
-  NetworkTableEntry tx;
-  NetworkTableEntry ty;
-  NetworkTableEntry ta;
 
   private int k_ticks_per_rev = 42 * 9;
-  private double k_wheel_diameter = 0.56;
-  private double k_max_velocity = 17.5;
-  public String k_path_name = "";
+  private double k_wheel_diameter = .50;
+  //Max Spd 14.92 ft
+  //Max Accel 
 
   public AHRS navX;
-  private Notifier notifier;
+  public Notifier notifier;
 
   private double quickStopAccumulator = 0.0;
   private double wheelDeadBand = 0.03;
   private double throttleDeadBand = 0.02;
 
-  public double xAngle;
-  public double yAngle;
-
-  private SpeedControllerGroup leftGroup, rightGroup;
+  public Limelight limelight = new Limelight();
+  private RollingAverage limelightAngle = new RollingAverage(5);
 
   private static final double SENSITIVITY = 0.90;
   private DoubleFunction<Double> limiter = limiter(-0.9, 0.9);
@@ -73,19 +65,23 @@ public class Drivetrain extends Subsystem {
     Hardware.leftFollower = new EncoderFollower();
     Hardware.rightFollower = new EncoderFollower();
 
+  /*  Hardware.frontLeft.setOpenLoopRampRate(0.5);
+    Hardware.frontRight.setOpenLoopRampRate(0.5);
+    Hardware.backLeft.setOpenLoopRampRate(0.5);
+    Hardware.backRight.setOpenLoopRampRate(0.5);
+    */
+    
+    Hardware.frontLeft.setSmartCurrentLimit(40, 45);
+    Hardware.frontRight.setSmartCurrentLimit(40, 45);
+    Hardware.backLeft.setSmartCurrentLimit(40, 45);
+    Hardware.backRight.setSmartCurrentLimit(40, 45);
+
     Hardware.frontLeftEncoder.setPosition(0);
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.backLeftEncoder.setPosition(0);
     Hardware.backRightEncoder.setPosition(0);
 
-    leftGroup = new SpeedControllerGroup(Hardware.frontLeft,Hardware.backLeft);
-    rightGroup = new SpeedControllerGroup(Hardware.frontRight, Hardware.backRight);
-
-    table = NetworkTableInstance.getDefault().getTable("limelight");
-    tx = table.getEntry("tx");
-    ty = table.getEntry("ty");
-    ta = table.getEntry("ta");
-
+    
     navX = new AHRS(SPI.Port.kMXP);
     navX.zeroYaw();
 
@@ -94,56 +90,67 @@ public class Drivetrain extends Subsystem {
 		Hardware.frontRight.setIdleMode(IdleMode.kCoast);
     Hardware.backRight.setIdleMode(IdleMode.kCoast);
 
-    
+    Hardware.frontRight.setInverted(true);
+    Hardware.backRight.setInverted(true); 
 
   }
 
-  public void initializePathFollower() {
+
+
+  public void initializePathFollower(String k_path_name) {
 
     navX.zeroYaw();
 
-    Hardware.frontLeft.setIdleMode(IdleMode.kBrake);
+ /*   Hardware.frontLeft.setIdleMode(IdleMode.kBrake);
 		Hardware.backLeft.setIdleMode(IdleMode.kBrake);
 		Hardware.frontRight.setIdleMode(IdleMode.kBrake);
     Hardware.backRight.setIdleMode(IdleMode.kBrake);
+*/
 
-    Trajectory left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
-    Trajectory right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
+    Trajectory right_trajectory;
+    Trajectory left_trajectory;
     
-    Hardware.leftFollower = new EncoderFollower(left_trajectory);
-    Hardware.rightFollower = new EncoderFollower(right_trajectory);
-  
-    Hardware.leftFollower.configureEncoder((int)(Hardware.frontLeftEncoder.getPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
-    Hardware.leftFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / k_max_velocity, 0);
+    try{
+      right_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".right");
+      left_trajectory = PathfinderFRC.getTrajectory(k_path_name + ".left"); // temporary because WPI API is broken
+      
+    }catch(IOException e){
+      right_trajectory = new Trajectory(1);
+      left_trajectory = new Trajectory(1);
+    }
 
-    Hardware.rightFollower.configureEncoder((int)(-Hardware.frontLeftEncoder.getPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
-    Hardware. rightFollower.configurePIDVA(0.29, 0.0, 0.0, 1 / k_max_velocity, 0);
+    Hardware.rightFollower = new EncoderFollower(left_trajectory);
+    Hardware.leftFollower = new EncoderFollower(right_trajectory);
+     
+    Hardware.leftFollower.configureEncoder((int)(getRightEncoderPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
+    Hardware.leftFollower.configurePIDVA(0.9, 0.0, 0.0, 1 / Constants.MAX_VELOCITY, 0);
+
+    Hardware.rightFollower.configureEncoder((int)(getleftEncoderPosition() * 42), k_ticks_per_rev, k_wheel_diameter);
+    Hardware. rightFollower.configurePIDVA(0.9, 0.0, 0.0, 1 / Constants.MAX_VELOCITY, 0);
       
     notifier = new Notifier(this::followPath);
     notifier.startPeriodic(left_trajectory.get(0).dt);
 
   }
 
+
   public void followPath() {
     if (Hardware.leftFollower.isFinished() || Hardware.rightFollower.isFinished()) {
-      SmartDashboard.putBoolean("stop", true);
       notifier.stop();
-      leftGroup.set(0);
-      rightGroup.set(0);
-
+      setLeftRightMotorOutputs(0, 0);
     } 
     
     else {
-      SmartDashboard.putBoolean("start", true);
 
-      double left_speed = Hardware.leftFollower.calculate((int)(Hardware.frontLeftEncoder.getPosition() * 42));
-      double right_speed = Hardware.rightFollower.calculate((int)(-Hardware.frontRightEncoder.getPosition() * 42));
+      double left_speed = Hardware.leftFollower.calculate((int)(getleftEncoderPosition() * 42));
+      double right_speed = Hardware.rightFollower.calculate((int)(getRightEncoderPosition() * 42));
       double heading = navX.getAngle();
       double desired_heading = -Pathfinder.r2d(Hardware.leftFollower.getHeading());
-      double heading_difference = Pathfinder.boundHalfDegrees(desired_heading + heading);
-      double turn =  0.8 * (-1.0/78.0) * heading_difference;
-      leftGroup.set(left_speed + turn);
-      rightGroup.set(-(right_speed - turn));
+      double heading_difference =  Pathfinder.boundHalfDegrees(desired_heading + heading);
+      SmartDashboard.putNumber("DIFFERENCE", heading_difference);
+      double turn =  -1 * (  1.0/40.0) * heading_difference; 
+     setLeftRightMotorOutputs(left_speed + turn, right_speed - turn);
+
     }
 
   }
@@ -154,60 +161,15 @@ public class Drivetrain extends Subsystem {
 
   public double getRightEncoderPosition() {
     return (Hardware.frontRightEncoder.getPosition() + Hardware.backRightEncoder.getPosition()) / 2;
-
   }
 
-  public double getAngle() {
-    return tx.getDouble(0);
-  }
 
   public double getYaw() {
     return navX.getYaw();
   }
 
-  public double getYDistance() {
-    Number[] empty = { 0, 0, 0, 0, 0, 0 };
-    Number newArray[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camtran")
-        .getNumberArray(empty);
-
-    return (double) newArray[2];
-  }
-
-  public double getXDistance() {
-    Number[] empty = { 0, 0, 0, 0, 0, 0 };
-    Number newArray[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camtran")
-        .getNumberArray(empty);
-
-    return (double) newArray[1];
-  }
-
-  public double getFinalAngle(){
-    Number[] empty = { 0, 0, 0, 0, 0, 0 };
-    Number newArray[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camtran").getNumberArray(empty);
-    return (double) newArray[5];
-  }
-
-  public void switchPipeline(int number) {
-
-    if(number == 3 || number == 4)
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
-    else
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
-  
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(number);
-  }
-
-
-  public void setLEDMode(int number) {
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(number);
-
-  }
-
-  public void curvatureDrive(double speed, double wheel, boolean quickTurn) {
-    //drive.curvatureDrive(speed, wheel, quickTurn);
-  }
-
   public void setLeftRightMotorOutputs(double left, double right) {
+
     Hardware.frontLeft.set(left);
     Hardware.backLeft.set(left);
     Hardware.frontRight.set(right);
@@ -233,7 +195,7 @@ public class Drivetrain extends Subsystem {
       }
       overPower = 1.0;
       angularPower = wheel;
-      angularPower *= 0.5;
+      angularPower *= 0.45;
     } else {
       overPower = 0.0;
       angularPower = Math.abs(throttle) * wheel * SENSITIVITY - quickStopAccumulator;
@@ -262,13 +224,29 @@ public class Drivetrain extends Subsystem {
       leftPwm += overPower * (-1.0 - rightPwm);
       rightPwm = -1.0;
     }
-    setLeftRightMotorOutputs(Constants.kInvertedMotors * leftPwm, Constants.kInvertedMotors * (-rightPwm));
+
+    setLeftRightMotorOutputs(Constants.kInvertedMotors * leftPwm, Constants.kInvertedMotors * (rightPwm));
   }
 
   public void driveWithTarget(double throttle, double angle) {
-    double yawSpeed = 1.4 * angle/ 30;
+    double yawSpeed = 1.25 * angle/ 30; 
 
-    cheesyDriveWithJoystick(-0.1, yawSpeed, false);
+    cheesyDriveWithJoystick(-0.2, yawSpeed, false);
+  }
+
+  public void driveWithTargetNew(){
+    if(limelight.hasTarget()){
+      double angle = limelight.getAngle();
+      double area = limelight.getArea();
+      
+      limelightAngle.add(angle);
+
+      double throttle = -Constants.kVisionThrottleP * (Constants.kMaxArea - area);
+      double wheel = Constants.kVisionWheelP * (limelightAngle.getAverage());
+      
+      cheesyDriveWithJoystick(throttle, wheel, false);
+    }  
+
   }
 
   public double handleDeadband(double val, double deadband) {
@@ -280,7 +258,8 @@ public class Drivetrain extends Subsystem {
     return Math.sin(factor * wheel) / Math.sin(factor);
   }
 
-  private DoubleFunction<Double> limiter(double minimum, double maximum) {
+  private DoubleFunction<Double> limiter(
+    double minimum, double maximum) {
     if (maximum < minimum) {
       throw new IllegalArgumentException("The minimum value cannot exceed the maximum value");
     }
@@ -295,9 +274,32 @@ public class Drivetrain extends Subsystem {
     };
   }
 
+
+  /**
+   * 
+   * @param invert true = invert, false = normal
+   */
+  public void invertMotors(boolean invert){
+   /* Hardware.frontRight.setInverted(!invert);
+    Hardware.backRight.setInverted(!invert); 
+    Hardware.frontLeft.setInverted(invert);
+    Hardware.backLeft.setInverted(invert); 
+    */
+  }
+
   @Override
   protected void initDefaultCommand() {
     setDefaultCommand(new DriveWithJoystick());
+  }
+
+
+  public void log(){
+    SmartDashboard.putNumber("NavX", getYaw());
+    SmartDashboard.putNumber("BackLeft Encoder", Hardware.backLeftEncoder.getPosition());
+    SmartDashboard.putNumber("FrontRight Encoder", Hardware.frontRightEncoder.getPosition());
+    SmartDashboard.putNumber("FrontLeft Encoder", Hardware.frontLeftEncoder.getPosition());
+    SmartDashboard.putNumber("BackRight Encoder", Hardware.backRightEncoder.getPosition());
+
   }
 
 }

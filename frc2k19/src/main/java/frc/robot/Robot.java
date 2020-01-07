@@ -7,104 +7,173 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.CargoIntake;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.GroundIntake;
 import frc.robot.subsystems.PanelIntake;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the TimedRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.gradle file in the
- * project.
- */
+
 public class Robot extends TimedRobot {
+
   public static Drivetrain drivetrain;
   public static Arm arm;
   public static OI oi;
   public static CargoIntake cargoIntake;
   public static PanelIntake panelIntake;
-  public static GroundIntake groundIntake;
+  public static Climber climber;
   public static Compressor c;
 
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  public static RobotState currState;
+  public static String autonPath;
 
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
-  @Override
+  SendableChooser<Integer> autonStart = new SendableChooser<>();
+  SendableChooser<Integer> autonEnd = new SendableChooser<>();
+
+  public static String lastSend;
+	public static I2C arduino;
+
+  public enum RobotState {
+    DISABLED, TELEOP, AUTON
+  };
+
   public void robotInit() {
-    oi = new OI(); 
     drivetrain = new Drivetrain();
     arm = new Arm();
     cargoIntake = new CargoIntake();
     panelIntake = new PanelIntake();
-    groundIntake = new GroundIntake();
+    climber = new Climber();
+    oi = new OI(); 
+
+    CameraServer.getInstance().startAutomaticCapture();
 
     Hardware.armOne.setNeutralMode(NeutralMode.Coast);
     Hardware.armTwo.setNeutralMode(NeutralMode.Coast);
     Hardware.armThree.setNeutralMode(NeutralMode.Coast);
     Hardware.armFour.setNeutralMode(NeutralMode.Coast);
 
-    CameraServer.getInstance().startAutomaticCapture();
+    
+    autonStart.setName("Auton Start Position");
+    autonStart.setDefaultOption("Front Center", 1);
+    autonStart.addOption("Front Left", 2);
+    autonStart.addOption("Front Right", 3);
+    autonStart.addOption("Back Left", 4);
+    autonStart.addOption("Back Right", 5);
+    autonStart.addOption("None", 6);
 
-    SmartDashboard.putString("Enter path selection: ", "default");
-    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
+    autonEnd.setDefaultOption("Rocket", 1);
+    autonEnd.addOption("Center Left", 2);
+    autonEnd.addOption("Center Right", 3);
+    autonEnd.addOption("Right 1", 4);
+    autonEnd.addOption("Right 2", 5);
+    autonEnd.addOption("Left 1", 6);
+    autonEnd.addOption("Left 2", 7);
+  
 
+    SmartDashboard.putData("Autonomous Start", autonStart);
+    SmartDashboard.putData("Autonomous End", autonEnd);
+
+    currState = RobotState.DISABLED;
+    autonPath = "";
   }
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
-   */
+
   @Override
   public void robotPeriodic() {
- //   SmartDashboard.putNumber("Arm MotorOutput", Hardware.armOne.getMotorOutputPercent());
-  //  SmartDashboard.putNumber("Arm Setpoint", arm.setpoint);
-    SmartDashboard.putNumber("Arm Encoder Value", arm.getArmEncoderValue());
-    SmartDashboard.putBoolean("Limit Switch", arm.hallEffect1.get());
-//    SmartDashboard.putBoolean("Back Hall Effect", arm.hallEffect2.get());
- //   SmartDashboard.putNumber("Limelight", drivetrain.getAngle());
-    SmartDashboard.putNumber("Drivetrain Encoder", drivetrain.getleftEncoderPosition());
- //   SmartDashboard.putNumber("2 Drivetrain Encoder", drivetrain.getRightEncoderPosition());
-   // SmartDashboard.putNumber("Right Output ", Hardware.frontRight.getAppliedOutput());
-   // SmartDashboard.putNumber("Left Output", Hardware.frontLeft.getAppliedOutput());
-    SmartDashboard.putNumber("Ground Encoder Value", Hardware.groundPivot.getSelectedSensorPosition());
-  //  SmartDashboard.putNumber("Ground pivot output", Hardware.groundPivot.getMotorOutputPercent());
-   // SmartDashboard.putNumber("Ground pivot error", Hardware.groundPivot.getClosedLoopError());
-    SmartDashboard.putNumber("Arm Output", Hardware.armOne.getMotorOutputPercent());
 
-    SmartDashboard.putBoolean("Cargo BreakBeam", Robot.cargoIntake.breakbeam.get());
+
+    
+    cargoIntake.log();
+    arm.log();
+    drivetrain.log();
+    panelIntake.log();
+   
+    climber.log();
+
+    
+    int autonStartLocation = autonStart.getSelected();
+    int autonEndLocation = autonEnd.getSelected();
+
+    switch(autonStartLocation){
+
+      case 1:
+        if(autonEndLocation == 2){
+          autonPath = "BotCenter-FrontLeft"; 
+        }else if(autonEndLocation == 3){
+          autonPath = "BotCenter-FrontRight";
+        }
+        break;
+      case 2:
+        if(autonEndLocation == 2){
+          autonPath = "BotLeft-FrontLeft";
+        }
+        else if(autonEndLocation == 1){
+          autonPath = "BotLeft-Rocket";
+        }else if(autonEndLocation == 6){
+          autonPath = "BotLeft-Left1";
+        }
+        break;
+      case 3:
+        if(autonEndLocation == 1){
+          autonPath = "BotRight-Rocket";
+        }else if(autonEndLocation == 3){
+          autonPath = "BotRight-FrontRight";
+        }else if(autonEndLocation == 4){
+          autonPath = "BotRight-Right1";
+        }
+        break;
+      case 4:
+        
+        if(autonEndLocation == 1){
+          autonPath = "TopLeft-Rocket";
+        }else if(autonEndLocation == 2){
+          autonPath = "TopLeft-FrontLeft";
+        }else if(autonEndLocation == 6){
+          autonPath = "TopLeft-Left1";
+        }
+        break;
+    
+       case 5:
+        if(autonEndLocation == 1){
+          autonPath = "TopRight-Rocket";
+        }else if(autonEndLocation ==3){
+          autonPath = "TopRight-FrontRight";
+        }else if(autonEndLocation == 4){
+          autonPath = "TopRight-Right1";
+        }
+       break;
+      
+      case 6:
+        autonPath = "";
+      break;
+   }
+
+
+    SmartDashboard.putString("AutonPath", autonPath);
   }
 
-  /**
-   * This function is called once each time the robot enters Disabled mode.
-   * You can use it to reset any subsystem information you want to clear when
-   * the robot is disabled.
-   */
-  @Override
+ 
   public void disabledInit() {
-    drivetrain.navX.zeroYaw();
-    Hardware.groundPivot.set(ControlMode.PercentOutput, 0.0);
+    currState = RobotState.DISABLED;
+//    updateLEDs("DISABLED");
+  /*  Hardware.frontLeft.setIdleMode(IdleMode.kCoast);
+		Hardware.backLeft.setIdleMode(IdleMode.kCoast);
+		Hardware.frontRight.setIdleMode(IdleMode.kCoast);
+    Hardware.backRight.setIdleMode(IdleMode.kCoast);
+    */
+
   }
 
 
@@ -112,89 +181,51 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
   }
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString code to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional commands to the
-   * chooser code above (like the commented example) or additional comparisons
-   * to the switch structure below with additional strings & commands.
-   */
-  @Override
+ 
   public void autonomousInit() {
+    currState = RobotState.AUTON;
 
-    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
-
-    m_autonomousCommand = m_chooser.getSelected();
+    drivetrain.navX.zeroYaw();
 
     Hardware.frontLeftEncoder.setPosition(0);
     Hardware.frontRightEncoder.setPosition(0);
     Hardware.backLeftEncoder.setPosition(0);
     Hardware.backRightEncoder.setPosition(0);
 
+    arm.firstTime = true;
     arm.currState = ArmState.ZEROED;
     arm.setpoint = 0;
+
     Hardware.armOne.setSelectedSensorPosition(0);
+    Hardware.rightClimb.setSelectedSensorPosition(0);
     
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector",
-     * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-     * = new MyAutoCommand(); break; case "Default Auto": default:
-     * autonomousCommand = new ExampleCommand(); break; }
-     */
+    Hardware.claw.set(Value.kForward);
+    Hardware.slider.set(Value.kReverse);
+   // updateLEDs("OTHER");
 
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.start();
-    }
-  }
 
-  /**
-   * This function is called periodically during autonomous.
-   */
-  @Override
+}
+
+  
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
   }
 
-  @Override
   public void teleopInit() {
-
-    drivetrain.k_path_name = SmartDashboard.getString("Enter path selection: ", "default");
-
-    Hardware.frontLeftEncoder.setPosition(0);
-    Hardware.frontRightEncoder.setPosition(0);
-    Hardware.backLeftEncoder.setPosition(0);
-    Hardware.backRightEncoder.setPosition(0);
-
-    Hardware.groundPivot.setSelectedSensorPosition(0);
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }    
+    currState = RobotState.TELEOP;
+  //  updateLEDs("DRIVING");
   }
 
-  /**
-   * This function is called periodically during operator control.
-   */
-  @Override
   public void teleopPeriodic() {
-    
-   // SmartDashboard.putNumber("ERROR", (arm.setpoint) - arm.getArmEncoderValue());
-   // SmartDashboard.putNumber("Talon Error", Hardware.armOne.getClosedLoopError());
-    Scheduler.getInstance().run(); 
+    Scheduler.getInstance().run();
+
+
   }
 
-  /**
-   * This function is called periodically during test mode.
-   */
-  @Override
-  public void testPeriodic() {
+  public void testPeriodic() {}
+
+  public String getAutonPath(){
+    return autonPath;
   }
+
 }
